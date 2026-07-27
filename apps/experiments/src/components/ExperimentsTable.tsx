@@ -1,0 +1,10 @@
+import type { ExperimentDto } from "@mlops/contracts";
+import { Link } from "react-router-dom";
+import { formatDuration, formatListDate } from "../experimentViewModel";
+import { ExperimentStatusBadge } from "./ExperimentStatusBadge";
+
+export type ExperimentSortKey = "name" | "status" | "startedAt" | "duration";
+export function ExperimentsTable({ experiments, sortKey, sortAsc, onSort }: { experiments: ExperimentDto[]; sortKey: ExperimentSortKey; sortAsc: boolean; onSort: (key: ExperimentSortKey) => void }) {
+  const sortLabel = (key: ExperimentSortKey, label: string) => <button type="button" className={sortKey === key ? "experiment-sort experiment-sort--active" : "experiment-sort"} onClick={() => onSort(key)}>{label}{sortKey === key ? <span aria-hidden>{sortAsc ? "↑" : "↓"}</span> : null}</button>;
+  return <div className="experiments-table-shell"><div className="experiments-table-scroll"><table className="experiments-table"><thead><tr><th>{sortLabel("name", "Название")}</th><th>{sortLabel("status", "Статус")}</th><th>Проект / Модель</th><th>Ключевая метрика</th><th>{sortLabel("duration", "Длительность")}</th><th>{sortLabel("startedAt", "Начало")}</th></tr></thead><tbody>{experiments.map((item) => <tr key={item.id}><td data-label="Название"><Link className="experiment-name-link" to={`/experiments/${item.id}`}>{item.name}</Link></td><td data-label="Статус"><ExperimentStatusBadge status={item.status} /></td><td data-label="Проект / Модель"><a className="experiment-project-link" href={`/projects/${item.project.id}`}>{item.project.name}</a>{item.model ? <a className="experiment-model-link" href={`/models/${item.model.id}`}>{item.model.name}</a> : <span className="experiment-model-link">—</span>}</td><td data-label="Ключевая метрика"><code>{item.keyMetric ? `${item.keyMetric.key}: ${item.keyMetric.formattedValue}` : "—"}</code></td><td data-label="Длительность" className="experiment-muted">{formatDuration(item.durationSeconds)}</td><td data-label="Начало" className="experiment-muted">{formatListDate(item.startedAt)}</td></tr>)}</tbody></table></div></div>;
+}

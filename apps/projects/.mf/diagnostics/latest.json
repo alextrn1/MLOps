@@ -1,0 +1,10 @@
+{
+  "latestErrorEvent": {
+    "code": "TYPE-001",
+    "message": "Failed to generate type declaration. Execute the below cmd to reproduce and fix the error. #TYPE-001\nargs: {\"cmd\":\"C:\\\\Users\\\\admin\\\\.cache\\\\codex-runtimes\\\\codex-primary-runtime\\\\dependencies\\\\node\\\\bin\\\\node.exe C:\\\\Users\\\\admin\\\\Documents\\\\Codex\\\\2026-07-27\\\\https-ml-ops-control-hub-iskinlidia\\\\node_modules\\\\.pnpm\\\\typescript@7.0.2\\\\node_modules\\\\typescript\\\\bin\\\\tsc --project C:\\\\Users\\\\admin\\\\Documents\\\\Codex\\\\2026-07-27\\\\https-ml-ops-control-hub-iskinlidia\\\\apps\\\\projects\\\\node_modules\\\\.federation\\\\tsconfig.7e6f98f186f1247944dbb45711dfe6fe.json\"}\nView the docs to see how to solve: https://module-federation.io/guide/troubleshooting/type#type-001",
+    "args": {
+      "cmd": "C:\\Users\\admin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe C:\\Users\\admin\\Documents\\Codex\\2026-07-27\\https-ml-ops-control-hub-iskinlidia\\node_modules\\.pnpm\\typescript@7.0.2\\node_modules\\typescript\\bin\\tsc --project C:\\Users\\admin\\Documents\\Codex\\2026-07-27\\https-ml-ops-control-hub-iskinlidia\\apps\\projects\\node_modules\\.federation\\tsconfig.7e6f98f186f1247944dbb45711dfe6fe.json"
+    },
+    "timestamp": 1785150624924
+  }
+}

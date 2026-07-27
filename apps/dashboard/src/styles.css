@@ -1,0 +1,63 @@
+.dashboard-page { min-width: 0; color: var(--ui-color-text); }
+.dashboard-page h1 { margin: 0 0 24px; font-size: 24px; font-weight: 700; line-height: 1.34; letter-spacing: -.025em; }
+.dashboard-standalone { min-height: 100vh; padding: 24px; background: var(--ui-color-bg); }
+
+.metrics-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-bottom: 24px; }
+.metric-card { display: flex; height: 150px; min-height: 150px; flex-direction: column; gap: 4px; padding: 24px; transition: transform .16s ease, box-shadow .16s ease; }
+.metric-card:hover { transform: translateY(-1px); box-shadow: 0 8px 22px rgb(15 23 41 / 8%); }
+.metric-card__header { display: flex; align-items: center; justify-content: space-between; color: var(--ui-color-muted); font-size: 14px; font-weight: 500; line-height: 20px; }
+.metric-card__header span { min-width: 0; }
+.metric-card__header svg { flex: 0 0 auto; }
+.metric-card > strong { margin-top: 2px; font-size: 30px; font-weight: 600; line-height: 36px; }
+.metric-card > small { color: var(--ui-color-muted); font-size: 12px; line-height: 16px; }
+.metric-card--critical { border-color: rgb(239 67 67 / 50%); background: rgb(239 67 67 / 5%); }
+.metric-card--critical .metric-card__header, .metric-card--critical > strong, .metric-card--critical > small { color: var(--ui-color-danger); }
+
+.dashboard-panels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.dashboard-panel { min-height: 428px; }
+.dashboard-panel__header { display: flex; min-height: 76px; align-items: flex-start; padding: 24px; }
+.dashboard-panel__header h2 { margin: 0; font-size: 18px; font-weight: 650; line-height: 28px; letter-spacing: -.025em; }
+.dashboard-panel__body { padding: 0 24px 24px; }
+
+.incident-row, .deployment-row { border: 1px solid var(--ui-color-border); border-radius: 8px; background: #fff; }
+.incident-row { display: flex; align-items: flex-start; gap: 12px; min-height: 66px; margin-bottom: 16px; padding: 12px; transition: background-color .16s ease, border-color .16s ease; }
+.incident-row:hover { border-color: #d2dae6; background: #f8fafc; }
+.incident-row:last-child, .deployment-row:last-child { margin-bottom: 0; }
+.incident-row__icon { flex: 0 0 auto; margin-top: 1px; }
+.incident-row__icon--critical { color: var(--ui-color-danger); }
+.incident-row__icon--warning { color: var(--ui-color-warning); }
+.incident-row__content { min-width: 0; flex: 1; }
+.incident-row__title { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.incident-row a, .deployment-row a { color: var(--ui-color-text); font-size: 14px; font-weight: 500; line-height: 20px; text-decoration: none; }
+.incident-row a { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.incident-row a:hover, .deployment-row a:hover { text-decoration: underline; }
+.incident-row time { flex: 0 0 auto; color: var(--ui-color-muted); font-size: 12px; }
+.incident-row p, .deployment-row p { margin: 0; color: var(--ui-color-muted); font-size: 12px; line-height: 20px; }
+
+.deployment-row { display: flex; min-height: 70px; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px; padding: 12px; transition: border-color .16s ease, box-shadow .16s ease; }
+.deployment-row:hover { border-color: #ccd6e3; box-shadow: 0 2px 8px rgb(15 23 41 / 5%); }
+.deployment-row__content { display: flex; min-width: 0; align-items: center; gap: 12px; }
+.deployment-row__content > div { min-width: 0; }
+.deployment-row__dot { width: 8px; height: 8px; flex: 0 0 8px; border-radius: 50%; background: var(--ui-color-success); }
+.deployment-row p { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+@media (max-width: 1180px) {
+  .metrics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 900px) {
+  .dashboard-panels { grid-template-columns: 1fr; }
+  .dashboard-panel { min-height: auto; }
+}
+
+@media (max-width: 600px) {
+  .dashboard-page h1 { margin-bottom: 18px; font-size: 22px; }
+  .dashboard-standalone { padding: 16px; }
+  .metrics-grid { grid-template-columns: 1fr; gap: 12px; margin-bottom: 16px; }
+  .metric-card { height: auto; min-height: 132px; padding: 20px; }
+  .dashboard-panels { gap: 16px; }
+  .dashboard-panel__header { min-height: 64px; padding: 18px; }
+  .dashboard-panel__header h2 { font-size: 16px; }
+  .dashboard-panel__body { padding: 0 18px 18px; }
+  .deployment-row { align-items: flex-start; }
+}
