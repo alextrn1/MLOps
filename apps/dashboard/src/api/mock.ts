@@ -1,4 +1,5 @@
 import type { DashboardActivityDto, DashboardIncidentsDto, DashboardSummaryDto } from "./types";
+import { waitForMockDelay } from "@mlops/api-client";
 
 const summary: DashboardSummaryDto = {
   metrics: [
@@ -25,7 +26,7 @@ const activity: DashboardActivityDto = {
   ]
 };
 
-const wait = (delay = 420) => new Promise<void>((resolve) => window.setTimeout(resolve, delay));
+const wait = () => waitForMockDelay(import.meta.env.VITE_MOCK_DELAY_MS);
 
 export async function getMockSummary() {
   await wait();

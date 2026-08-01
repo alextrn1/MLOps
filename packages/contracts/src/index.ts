@@ -208,3 +208,201 @@ export interface CreateExperimentDto {
   modelId: string;
   datasetId: string;
 }
+
+export interface DatasetProjectDto {
+  id: string;
+  name: string;
+}
+
+export type DatasetSourceType = "dwh" | "clickhouse" | "s3";
+
+export interface DatasetDto {
+  id: string;
+  name: string;
+  description: string;
+  project: DatasetProjectDto;
+  sourceType: DatasetSourceType;
+  sourceLabel: string;
+  sizeMb: number;
+  rowsCount: number;
+  rowsLabel: string;
+  latestVersion: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateDatasetDto {
+  name: string;
+  description: string;
+  projectId: string;
+  sourceType: DatasetSourceType;
+  sourceLabel: string;
+}
+
+export type UpdateDatasetDto = Partial<CreateDatasetDto>;
+
+export interface DatasetVersionDto {
+  id: string;
+  datasetId: string;
+  version: string;
+  description: string;
+  sizeMb: number;
+  rowsCount: number;
+  rowsLabel: string;
+  author: string;
+  createdAt: string;
+}
+
+export interface CreateDatasetVersionDto {
+  version: string;
+  description: string;
+}
+
+export interface DatasetSchemaFieldDto {
+  name: string;
+  type: string;
+  nullable: boolean;
+  description: string;
+}
+
+export interface DatasetProfileDto {
+  datasetId: string;
+  versionId: string;
+  rowsCount: number;
+  columnsCount: number;
+  sizeMb: number;
+  missingValuesPercent: number;
+  duplicateRowsPercent: number;
+  profiledAt: string;
+}
+
+export interface DatasetLineageNodeDto {
+  id: string;
+  name: string;
+  kind: "source" | "dataset" | "model" | "experiment";
+  href: string | null;
+}
+
+export interface DatasetLineageDto {
+  datasetId: string;
+  upstream: DatasetLineageNodeDto[];
+  downstream: DatasetLineageNodeDto[];
+}
+
+export type DeploymentEnvironment = "production" | "staging";
+export type DeploymentStatus = "active" | "restarting" | "inactive" | "failed";
+
+export interface DeploymentEntityRefDto {
+  id: string;
+  name: string;
+}
+
+export interface DeploymentDto {
+  id: string;
+  name: string;
+  status: DeploymentStatus;
+  environment: DeploymentEnvironment;
+  url: string;
+  project: DeploymentEntityRefDto;
+  model: DeploymentEntityRefDto;
+  modelVersionId: string;
+  modelVersion: string;
+  trafficPercent: number;
+  deployedAt: string;
+  deployedBy: string;
+}
+
+export interface CreateDeploymentDto {
+  name: string;
+  environment: DeploymentEnvironment;
+  url: string;
+  projectId: string;
+  modelId: string;
+  modelVersionId: string;
+  trafficPercent: number;
+}
+
+export type UpdateDeploymentDto = Partial<Pick<CreateDeploymentDto, "name" | "url" | "environment">>;
+
+export interface UpdateDeploymentTrafficDto {
+  trafficPercent: number;
+}
+
+export interface DeploymentMetricPointDto {
+  timestamp: string;
+  timeLabel: string;
+  latencyP95Ms: number;
+  requestsPerHour: number;
+  errorRatePercent: number;
+}
+
+export interface DeploymentMetricsDto {
+  deploymentId: string;
+  averageLatencyP95Ms: number;
+  trafficPercent: number;
+  errorRatePercent: number;
+  points: DeploymentMetricPointDto[];
+}
+
+export type DeploymentEventType = "data_drift" | "model_degradation" | "error_rate" | "latency_spike" | "usage_anomaly" | "restart" | "rollback";
+
+export interface DeploymentEventDto {
+  id: string;
+  deploymentId: string;
+  title: string;
+  type: DeploymentEventType;
+  severity: "critical" | "warning" | "info";
+  occurredAt: string;
+  monitoringEventId: string | null;
+}
+
+export type IncidentStatus = "open" | "acknowledged" | "resolved";
+export type IncidentSeverity = "critical" | "warning";
+export type IncidentType = "latency_spike" | "data_drift" | "model_degradation" | "usage_anomaly" | "error_rate";
+
+export interface IncidentEntityRefDto { id: string; name: string; }
+export interface IncidentDeploymentRefDto extends IncidentEntityRefDto { url: string; environment: "production" | "staging"; }
+export interface IncidentMetricDto { label: string; value: number; formattedValue: string; threshold: number; formattedThreshold: string; tone: "danger" | "warning"; }
+
+export interface IncidentDto {
+  id: string;
+  title: string;
+  description: string;
+  type: IncidentType;
+  typeLabel: string;
+  severity: IncidentSeverity;
+  status: IncidentStatus;
+  deployment: IncidentDeploymentRefDto;
+  project: IncidentEntityRefDto;
+  metric: IncidentMetricDto;
+  detectedAt: string;
+  resolvedAt: string | null;
+  resolvedBy: string | null;
+}
+
+export type IncidentTimelineEventType = "created" | "acknowledged" | "comment" | "resolved" | "reopened";
+export interface IncidentTimelineEventDto { id: string; incidentId: string; type: IncidentTimelineEventType; author: string; message: string; createdAt: string; }
+export interface CreateIncidentCommentDto { message: string; }
+
+export interface AlertRuleDto {
+  id: string;
+  name: string;
+  incidentType: IncidentType;
+  metric: string;
+  operator: "gt" | "gte" | "lt" | "lte";
+  threshold: number;
+  enabled: boolean;
+  deploymentId: string | null;
+}
+
+export interface CreateAlertRuleDto {
+  name: string;
+  incidentType: IncidentType;
+  metric: string;
+  operator: AlertRuleDto["operator"];
+  threshold: number;
+  enabled: boolean;
+  deploymentId: string | null;
+}
+
+export type UpdateAlertRuleDto = Partial<CreateAlertRuleDto>;

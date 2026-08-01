@@ -9,6 +9,7 @@ import type {
   UpdateModelDto,
   UpdateModelVersionStageDto
 } from "@mlops/contracts";
+import { waitForMockDelay } from "@mlops/api-client";
 
 const projects: ModelProjectDto[] = [
   { id: "p1", name: "Кредитный Скоринг Retail" },
@@ -48,7 +49,7 @@ const artifacts: Record<string, ModelArtifactDto[]> = Object.fromEntries(Object.
   { id: `${version.id}-env`, name: "requirements.txt", type: "environment", sizeBytes: 2048, uri: `s3://mlops-artifacts/${version.modelId}/${version.version}/requirements.txt` }
 ]]));
 
-const wait = () => new Promise((resolve) => setTimeout(resolve, 320));
+const wait = () => waitForMockDelay(import.meta.env.VITE_MOCK_DELAY_MS);
 const clone = <T,>(value: T): T => structuredClone(value);
 
 export class MockModelApiError extends Error {

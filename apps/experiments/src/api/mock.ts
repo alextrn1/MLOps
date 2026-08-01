@@ -1,4 +1,5 @@
 import type { CreateExperimentDto, ExperimentArtifactDto, ExperimentDto, ExperimentLogLineDto, ExperimentMetricDto, ExperimentParameterDto } from "@mlops/contracts";
+import { waitForMockDelay } from "@mlops/api-client";
 
 const projects = {
   p1: { id: "p1", name: "Кредитный Скоринг Retail" },
@@ -45,7 +46,7 @@ const logs: Record<string, ExperimentLogLineDto[]> = {
   e4: [{ id: "l8", timestamp: "2024-02-21T12:15:00", level: "error", message: "Training stopped: target column contains missing values" }]
 };
 
-const wait = () => new Promise((resolve) => setTimeout(resolve, 300));
+const wait = () => waitForMockDelay(import.meta.env.VITE_MOCK_DELAY_MS);
 const clone = <T,>(value: T): T => structuredClone(value);
 export class MockExperimentApiError extends Error { readonly status = 404; constructor() { super("experiment not found"); } }
 function find(id: string) { const item = experiments.find((experiment) => experiment.id === id); if (!item) throw new MockExperimentApiError(); return item; }

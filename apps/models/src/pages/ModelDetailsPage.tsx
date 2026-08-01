@@ -1,5 +1,5 @@
 import type { ModelDto, ModelMetricDto, ModelVersionDto } from "@mlops/contracts";
-import { AppIcon, ErrorState, LoadingState, Notice } from "@mlops/ui";
+import { AppIcon, DelayedLoadingState, ErrorState, Notice } from "@mlops/ui";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { isModelNotFound, modelsApi } from "../api";
@@ -12,7 +12,7 @@ export function ModelDetailsPage() {
   const [model, setModel] = useState<ModelDto | null>(null); const [versions, setVersions] = useState<ModelVersionDto[]>([]); const [metrics, setMetrics] = useState<Record<string, ModelMetricDto[]>>({});
   const [state, setState] = useState<"loading" | "ready" | "error" | "not-found">("loading"); const [reloadKey, setReloadKey] = useState(0); const [registering, setRegistering] = useState(false); const [success, setSuccess] = useState(routeSuccess ?? "");
   useEffect(() => { let active = true; setState("loading"); Promise.all([modelsApi.getModel(modelId), modelsApi.listVersions(modelId)]).then(async ([modelData, versionData]) => { const entries = await Promise.all(versionData.map(async (version) => [version.id, await modelsApi.getVersionMetrics(modelId, version.id)] as const)); if (active) { setModel(modelData); setVersions(versionData); setMetrics(Object.fromEntries(entries)); setState("ready"); } }).catch((error) => { if (active) setState(isModelNotFound(error) ? "not-found" : "error"); }); return () => { active = false; }; }, [modelId, reloadKey]);
-  if (state === "loading") return <LoadingState label="Загружаем модель и версии…" />;
+  if (state === "loading") return <DelayedLoadingState loading label="Загружаем модель и версии…" />;
   if (state === "not-found") return <ModelNotFoundPage kind="model" />;
   if (state === "error") return <ErrorState title="Не удалось загрузить модель" description="Проверьте подключение к API и попробуйте снова." onRetry={() => setReloadKey((value) => value + 1)} />;
   if (!model) return null;

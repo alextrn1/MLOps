@@ -1,1 +1,14 @@
-import{sectionTitles}from"@mlops/ui";import{useRoutes,type RouteObject}from"react-router-dom";import"./styles.css";function Page(){return <section className="remote-page"><span className="remote-page__eyebrow">MLOps Control Hub</span><h1>{sectionTitles.deployments}</h1><p>Базовый standalone-каркас микрофронтенда готов к дальнейшей реализации.</p></section>}export const routes:RouteObject[]=[{path:"*",element:<Page/>}];export default function DeploymentsRoutes(){return useRoutes(routes)}
+import { useRoutes, type RouteObject } from "react-router-dom";
+import { DeploymentDetailsPage } from "./pages/DeploymentDetailsPage";
+import { DeploymentNotFoundPage } from "./pages/DeploymentNotFoundPage";
+import { DeploymentsRegistryPage } from "./pages/DeploymentsRegistryPage";
+import { NewDeploymentPage } from "./pages/NewDeploymentPage";
+import "./styles.css";
+
+export const routes: RouteObject[] = [
+  { index: true, element: <DeploymentsRegistryPage /> },
+  { path: "new", element: <NewDeploymentPage /> },
+  { path: ":deploymentId", element: <DeploymentDetailsPage /> },
+  { path: "*", element: <DeploymentNotFoundPage /> }
+];
+export default function DeploymentsRoutes() { return useRoutes(routes); }

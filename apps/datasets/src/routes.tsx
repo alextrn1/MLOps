@@ -1,1 +1,16 @@
-import{sectionTitles}from"@mlops/ui";import{useRoutes,type RouteObject}from"react-router-dom";import"./styles.css";function Page(){return <section className="remote-page"><span className="remote-page__eyebrow">MLOps Control Hub</span><h1>{sectionTitles.datasets}</h1><p>Базовый standalone-каркас микрофронтенда готов к дальнейшей реализации.</p></section>}export const routes:RouteObject[]=[{path:"*",element:<Page/>}];export default function DatasetsRoutes(){return useRoutes(routes)}
+import { useRoutes, type RouteObject } from "react-router-dom";
+import { DatasetDetailsPage } from "./pages/DatasetDetailsPage";
+import { DatasetFormPage } from "./pages/DatasetFormPage";
+import { DatasetNotFoundPage } from "./pages/DatasetNotFoundPage";
+import { DatasetsRegistryPage } from "./pages/DatasetsRegistryPage";
+import { DatasetVersionPage } from "./pages/DatasetVersionPage";
+import "./styles.css";
+
+export const routes: RouteObject[] = [
+  { index: true, element: <DatasetsRegistryPage /> },
+  { path: "new", element: <DatasetFormPage /> },
+  { path: ":datasetId/versions/:versionId", element: <DatasetVersionPage /> },
+  { path: ":datasetId", element: <DatasetDetailsPage /> },
+  { path: "*", element: <DatasetNotFoundPage /> }
+];
+export default function DatasetsRoutes() { return useRoutes(routes); }

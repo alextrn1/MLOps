@@ -1,1 +1,12 @@
-import{sectionTitles}from"@mlops/ui";import{useRoutes,type RouteObject}from"react-router-dom";import"./styles.css";function Page(){return <section className="remote-page"><span className="remote-page__eyebrow">MLOps Control Hub</span><h1>{sectionTitles.monitoring}</h1><p>Базовый standalone-каркас микрофронтенда готов к дальнейшей реализации.</p></section>}export const routes:RouteObject[]=[{path:"*",element:<Page/>}];export default function MonitoringRoutes(){return useRoutes(routes)}
+import { useRoutes, type RouteObject } from "react-router-dom";
+import { IncidentDetailsPage } from "./pages/IncidentDetailsPage";
+import { IncidentNotFoundPage } from "./pages/IncidentNotFoundPage";
+import { MonitoringRegistryPage } from "./pages/MonitoringRegistryPage";
+import "./styles.css";
+
+export const routes: RouteObject[] = [
+  { index: true, element: <MonitoringRegistryPage /> },
+  { path: ":incidentId", element: <IncidentDetailsPage /> },
+  { path: "*", element: <IncidentNotFoundPage /> }
+];
+export default function MonitoringRoutes() { return useRoutes(routes); }

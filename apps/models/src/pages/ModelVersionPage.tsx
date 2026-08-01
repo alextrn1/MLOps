@@ -1,5 +1,5 @@
 import type { ModelArtifactDto, ModelDto, ModelMetricDto, ModelVersionDto, ModelVersionStage } from "@mlops/contracts";
-import { AppIcon, Button, ErrorState, LoadingState, Notice, SelectField } from "@mlops/ui";
+import { AppIcon, Button, DelayedLoadingState, ErrorState, Notice, SelectField } from "@mlops/ui";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { isModelNotFound, isVersionNotFound, modelsApi } from "../api";
@@ -11,7 +11,7 @@ export function ModelVersionPage() {
   const { modelId = "", versionId = "" } = useParams(); const [model, setModel] = useState<ModelDto | null>(null); const [version, setVersion] = useState<ModelVersionDto | null>(null); const [metrics, setMetrics] = useState<ModelMetricDto[]>([]); const [artifacts, setArtifacts] = useState<ModelArtifactDto[]>([]); const [stage, setStage] = useState<ModelVersionStage>("staging"); const [state, setState] = useState<"loading" | "ready" | "error" | "model-not-found" | "version-not-found">("loading"); const [saving, setSaving] = useState(false); const [notice, setNotice] = useState(""); const [saveError, setSaveError] = useState(""); const [reloadKey, setReloadKey] = useState(0);
   useEffect(() => { let active = true; setState("loading"); Promise.all([modelsApi.getModel(modelId), modelsApi.getVersion(modelId, versionId), modelsApi.getVersionMetrics(modelId, versionId), modelsApi.getVersionArtifacts(modelId, versionId)]).then(([modelData, versionData, metricData, artifactData]) => { if (active) { setModel(modelData); setVersion(versionData); setStage(versionData.stage); setMetrics(metricData); setArtifacts(artifactData); setState("ready"); } }).catch((error) => { if (!active) return; if (isModelNotFound(error)) setState("model-not-found"); else if (isVersionNotFound(error)) setState("version-not-found"); else setState("error"); }); return () => { active = false; }; }, [modelId, versionId, reloadKey]);
   const saveStage = async () => { if (!version) return; setSaving(true); setSaveError(""); try { const updated = await modelsApi.updateVersionStage(modelId, versionId, { stage }); setVersion(updated); setNotice("Стадия версии обновлена."); } catch { setSaveError("Не удалось обновить стадию."); } finally { setSaving(false); } };
-  if (state === "loading") return <LoadingState label="Загружаем версию модели…" />;
+  if (state === "loading") return <DelayedLoadingState loading label="Загружаем версию модели…" />;
   if (state === "model-not-found") return <ModelNotFoundPage kind="model" />;
   if (state === "version-not-found") return <ModelNotFoundPage kind="version" />;
   if (state === "error") return <ErrorState title="Не удалось загрузить версию" description="Проверьте подключение к API и попробуйте снова." onRetry={() => setReloadKey((value) => value + 1)} />;

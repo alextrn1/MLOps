@@ -9,6 +9,7 @@ import type {
   UpdateProjectDto,
   UpdateProjectMembersDto
 } from "@mlops/contracts";
+import { waitForMockDelay } from "@mlops/api-client";
 
 const owners: ProjectOwnerDto[] = [
   { id: "u1", name: "Анна Смирнова", title: "Lead DS" },
@@ -55,7 +56,7 @@ let members: Record<string, ProjectMemberDto[]> = Object.fromEntries(
   projects.map((project) => [project.id, [{ userId: project.owner.id, name: project.owner.name, title: project.owner.title, role: "owner" }]])
 );
 
-const wait = () => new Promise((resolve) => setTimeout(resolve, 320));
+const wait = () => waitForMockDelay(import.meta.env.VITE_MOCK_DELAY_MS);
 const clone = <T,>(value: T): T => structuredClone(value);
 
 export class MockProjectNotFoundError extends Error {

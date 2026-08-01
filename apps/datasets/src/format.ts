@@ -1,0 +1,2 @@
+export const formatDate = (value: string) => new Intl.DateTimeFormat("ru-RU", { day: "2-digit", month: "2-digit", year: "numeric" }).format(new Date(`${value}T00:00:00`));
+export const formatNumber = (value: number) => new Intl.NumberFormat("ru-RU").format(value);

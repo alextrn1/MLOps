@@ -1,5 +1,5 @@
 import type { CreateProjectDto, ProjectDto, ProjectOwnerDto, ProjectStatus } from "@mlops/contracts";
-import { AppIcon, Button, ErrorState, LoadingState, Notice, SelectField, TextField } from "@mlops/ui";
+import { AppIcon, Button, DelayedLoadingState, ErrorState, Notice, SelectField, TextField } from "@mlops/ui";
 import { type ChangeEvent, type FormEvent, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { isProjectNotFoundError, projectsApi } from "../api";
@@ -66,7 +66,7 @@ export function ProjectFormPage({ mode }: { mode: "create" | "edit" }) {
     }
   };
 
-  if (state === "loading") return <LoadingState label={mode === "create" ? "Подготавливаем форму…" : "Загружаем проект…"} />;
+  if (state === "loading") return <DelayedLoadingState loading label={mode === "create" ? "Подготавливаем форму…" : "Загружаем проект…"} />;
   if (state === "not-found") return <ProjectNotFoundPage />;
   if (state === "error") return <ErrorState title="Не удалось открыть форму" description="Проверьте подключение к API и попробуйте снова." onRetry={() => setReloadKey((value) => value + 1)} />;
 

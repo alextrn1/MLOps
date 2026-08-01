@@ -1,5 +1,5 @@
 import type { ProjectDto, ProjectSummaryDto } from "@mlops/contracts";
-import { AppIcon, ErrorState, LoadingState, Notice } from "@mlops/ui";
+import { AppIcon, DelayedLoadingState, ErrorState, Notice } from "@mlops/ui";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { isProjectNotFoundError, projectsApi } from "../api";
@@ -25,7 +25,7 @@ export function ProjectDetailsPage() {
     return () => { active = false; };
   }, [projectId, reloadKey]);
 
-  if (state === "loading") return <LoadingState label="Загружаем проект…" />;
+  if (state === "loading") return <DelayedLoadingState loading label="Загружаем проект…" />;
   if (state === "not-found") return <ProjectNotFoundPage />;
   if (state === "error") return <ErrorState title="Не удалось загрузить проект" description="Проверьте подключение к API и попробуйте снова." onRetry={() => setReloadKey((value) => value + 1)} />;
   if (!project || !summary) return null;

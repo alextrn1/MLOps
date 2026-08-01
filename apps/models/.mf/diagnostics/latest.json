@@ -1,10 +1,10 @@
 {
   "latestErrorEvent": {
     "code": "TYPE-001",
-    "message": "Failed to generate type declaration. Execute the below cmd to reproduce and fix the error. #TYPE-001\nargs: {\"cmd\":\"C:\\\\Users\\\\admin\\\\.cache\\\\codex-runtimes\\\\codex-primary-runtime\\\\dependencies\\\\node\\\\bin\\\\node.exe C:\\\\Users\\\\admin\\\\Documents\\\\Codex\\\\2026-07-27\\\\https-ml-ops-control-hub-iskinlidia\\\\node_modules\\\\.pnpm\\\\typescript@7.0.2\\\\node_modules\\\\typescript\\\\bin\\\\tsc --project C:\\\\Users\\\\admin\\\\Documents\\\\Codex\\\\2026-07-27\\\\https-ml-ops-control-hub-iskinlidia\\\\apps\\\\models\\\\node_modules\\\\.federation\\\\tsconfig.2d93d7e0312b5abaf759062bfbadc852.json\"}\nView the docs to see how to solve: https://module-federation.io/guide/troubleshooting/type#type-001",
+    "message": "Failed to generate type declaration. Execute the below cmd to reproduce and fix the error. #TYPE-001\nargs: {\"cmd\":\"\\\"C:\\\\\\\\Program Files\\\\\\\\nodejs\\\\\\\\node.exe\\\" C:\\\\Users\\\\admin\\\\Documents\\\\Codex\\\\2026-07-27\\\\https-ml-ops-control-hub-iskinlidia\\\\node_modules\\\\.pnpm\\\\typescript@7.0.2\\\\node_modules\\\\typescript\\\\bin\\\\tsc --project C:\\\\Users\\\\admin\\\\Documents\\\\Codex\\\\2026-07-27\\\\https-ml-ops-control-hub-iskinlidia\\\\apps\\\\models\\\\node_modules\\\\.federation\\\\tsconfig.84252b5c1c324a80403d1b29f78bc727.json\"}\nView the docs to see how to solve: https://module-federation.io/guide/troubleshooting/type#type-001",
     "args": {
-      "cmd": "C:\\Users\\admin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe C:\\Users\\admin\\Documents\\Codex\\2026-07-27\\https-ml-ops-control-hub-iskinlidia\\node_modules\\.pnpm\\typescript@7.0.2\\node_modules\\typescript\\bin\\tsc --project C:\\Users\\admin\\Documents\\Codex\\2026-07-27\\https-ml-ops-control-hub-iskinlidia\\apps\\models\\node_modules\\.federation\\tsconfig.2d93d7e0312b5abaf759062bfbadc852.json"
+      "cmd": "\"C:\\\\Program Files\\\\nodejs\\\\node.exe\" C:\\Users\\admin\\Documents\\Codex\\2026-07-27\\https-ml-ops-control-hub-iskinlidia\\node_modules\\.pnpm\\typescript@7.0.2\\node_modules\\typescript\\bin\\tsc --project C:\\Users\\admin\\Documents\\Codex\\2026-07-27\\https-ml-ops-control-hub-iskinlidia\\apps\\models\\node_modules\\.federation\\tsconfig.84252b5c1c324a80403d1b29f78bc727.json"
     },
-    "timestamp": 1785152439403
+    "timestamp": 1785601022808
   }
 }

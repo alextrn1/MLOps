@@ -1,7 +1,13 @@
+import { useDelayedLoading } from "@mlops/ui";
 import { Component, Suspense, type ErrorInfo, type ReactNode } from "react";
 
 interface Props { name: string; children: ReactNode; }
 interface State { failed: boolean; }
+
+function RemoteLoading({ name }: { name: string }) {
+  const visible = useDelayedLoading(true, 200);
+  return visible ? <section className="remote-state"><span className="spinner" aria-hidden="true"/><p>Загрузка раздела «{name}»…</p></section> : null;
+}
 
 export class RemoteBoundary extends Component<Props, State> {
   state: State = { failed: false };
@@ -26,6 +32,6 @@ export class RemoteBoundary extends Component<Props, State> {
       );
     }
 
-    return <Suspense fallback={<section className="remote-state"><span className="spinner" aria-hidden="true"/><p>Загрузка раздела «{this.props.name}»…</p></section>}>{this.props.children}</Suspense>;
+    return <Suspense fallback={<RemoteLoading name={this.props.name} />}>{this.props.children}</Suspense>;
   }
 }

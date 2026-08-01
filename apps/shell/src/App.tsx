@@ -1,15 +1,29 @@
 import { AppIcon, type AppIconName } from "@mlops/ui";
-import { lazy, type ComponentType, type FormEvent } from "react";
+import { lazy, useEffect, type ComponentType, type FormEvent } from "react";
 import { NavLink, Navigate, Route, Routes } from "react-router-dom";
 import { RemoteBoundary } from "./RemoteBoundary";
 
-const Dashboard = lazy(() => import("dashboard/routes"));
-const Projects = lazy(() => import("projects/routes"));
-const Models = lazy(() => import("models/routes"));
-const Experiments = lazy(() => import("experiments/routes"));
-const Datasets = lazy(() => import("datasets/routes"));
-const Deployments = lazy(() => import("deployments/routes"));
-const Monitoring = lazy(() => import("monitoring/routes"));
+function memoizeImport<T>(load: () => Promise<T>): () => Promise<T> {
+  let pending: Promise<T> | undefined;
+  return () => pending ??= load();
+}
+
+const loadDashboard = memoizeImport(() => import("dashboard/routes"));
+const loadProjects = memoizeImport(() => import("projects/routes"));
+const loadModels = memoizeImport(() => import("models/routes"));
+const loadExperiments = memoizeImport(() => import("experiments/routes"));
+const loadDatasets = memoizeImport(() => import("datasets/routes"));
+const loadDeployments = memoizeImport(() => import("deployments/routes"));
+const loadMonitoring = memoizeImport(() => import("monitoring/routes"));
+const remoteLoaders = [loadDashboard, loadProjects, loadModels, loadExperiments, loadDatasets, loadDeployments, loadMonitoring] as const;
+
+const Dashboard = lazy(loadDashboard);
+const Projects = lazy(loadProjects);
+const Models = lazy(loadModels);
+const Experiments = lazy(loadExperiments);
+const Datasets = lazy(loadDatasets);
+const Deployments = lazy(loadDeployments);
+const Monitoring = lazy(loadMonitoring);
 
 interface NavigationItem {
   to: string;
@@ -17,16 +31,17 @@ interface NavigationItem {
   icon: AppIconName;
   end?: boolean;
   badge?: string;
+  preload: () => Promise<unknown>;
 }
 
 const navigation: readonly NavigationItem[] = [
-  { to: "/", label: "Дашборд", icon: "layout", end: true },
-  { to: "/projects", label: "Проекты", icon: "folder" },
-  { to: "/models", label: "Модели", icon: "box" },
-  { to: "/experiments", label: "Эксперименты", icon: "activity" },
-  { to: "/datasets", label: "Датасеты", icon: "database" },
-  { to: "/deployments", label: "Развёртывания", icon: "server" },
-  { to: "/monitoring", label: "Мониторинг", icon: "bell", badge: "2" }
+  { to: "/", label: "Дашборд", icon: "layout", end: true, preload: loadDashboard },
+  { to: "/projects", label: "Проекты", icon: "folder", preload: loadProjects },
+  { to: "/models", label: "Модели", icon: "box", preload: loadModels },
+  { to: "/experiments", label: "Эксперименты", icon: "activity", preload: loadExperiments },
+  { to: "/datasets", label: "Датасеты", icon: "database", preload: loadDatasets },
+  { to: "/deployments", label: "Развёртывания", icon: "server", preload: loadDeployments },
+  { to: "/monitoring", label: "Мониторинг", icon: "bell", badge: "2", preload: loadMonitoring }
 ];
 
 const profile = {
@@ -55,6 +70,8 @@ function Sidebar() {
               to={item.to}
               end={item.end}
               title={item.label}
+              onMouseEnter={() => void item.preload()}
+              onFocus={() => void item.preload()}
               className={({ isActive }) => isActive ? "nav-link nav-link--active" : "nav-link"}
             >
               <AppIcon name={item.icon} size={18} aria-hidden />
@@ -89,6 +106,19 @@ function Topbar() {
 }
 
 export default function App() {
+  useEffect(() => {
+    const idleWindow = window as Window & {
+      requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number;
+      cancelIdleCallback?: (handle: number) => void;
+    };
+    const preload = () => { for (const load of remoteLoaders) void load(); };
+    const handle = idleWindow.requestIdleCallback?.(preload, { timeout: 2500 }) ?? window.setTimeout(preload, 1000);
+    return () => {
+      if (idleWindow.cancelIdleCallback) idleWindow.cancelIdleCallback(handle);
+      else window.clearTimeout(handle);
+    };
+  }, []);
+
   return (
     <div className="shell">
       <Sidebar />

@@ -19,6 +19,7 @@ export default defineConfig(({ mode }) => {
       react(),
       federation({
         name: "shell",
+        dts: false,
         remotes: {
           dashboard: { type: "module", name: "dashboard", entry: remoteEntry("VITE_DASHBOARD_REMOTE_URL", "http://127.0.0.1:5174/remoteEntry.js") },
           projects: { type: "module", name: "projects", entry: remoteEntry("VITE_PROJECTS_REMOTE_URL", "http://127.0.0.1:5175/remoteEntry.js") },
