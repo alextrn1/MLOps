@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type DependencyList } from "react";
 
 const resourceCache = new Map<string, unknown>();
+const resourceRequests = new Map<string, Promise<unknown>>();
 
 export function useDelayedLoading(loading: boolean, delayMs = 200): boolean {
   const [visible, setVisible] = useState(false);
@@ -25,9 +26,16 @@ export function useCachedResource<T>(cacheKey: string, loader: () => Promise<T>,
   const [refreshing, setRefreshing] = useState(false);
   const requestId = useRef(0);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (force = true) => {
     const currentRequest = ++requestId.current;
     const cached = resourceCache.get(cacheKey) as T | undefined;
+    if (cached !== undefined && !force) {
+      setDataState(cached);
+      setLoading(false);
+      setRefreshing(false);
+      setError(null);
+      return;
+    }
     if (cached === undefined) {
       setDataState(null);
       setLoading(true);
@@ -38,13 +46,19 @@ export function useCachedResource<T>(cacheKey: string, loader: () => Promise<T>,
     }
     setError(null);
 
+    let request = resourceRequests.get(cacheKey) as Promise<T> | undefined;
     try {
-      const value = await loader();
+      if (!request || force) {
+        request = loader();
+        resourceRequests.set(cacheKey, request);
+      }
+      const value = await request;
       resourceCache.set(cacheKey, value);
       if (requestId.current === currentRequest) setDataState(value);
     } catch (reason) {
       if (requestId.current === currentRequest && cached === undefined) setError(reason instanceof Error ? reason : new Error("Неизвестная ошибка API"));
     } finally {
+      if (resourceRequests.get(cacheKey) === request) resourceRequests.delete(cacheKey);
       if (requestId.current === currentRequest) {
         setLoading(false);
         setRefreshing(false);
@@ -54,7 +68,7 @@ export function useCachedResource<T>(cacheKey: string, loader: () => Promise<T>,
   }, [cacheKey, ...deps]);
 
   useEffect(() => {
-    void load();
+    void load(false);
     return () => { requestId.current += 1; };
   }, [load]);
 
@@ -63,5 +77,7 @@ export function useCachedResource<T>(cacheKey: string, loader: () => Promise<T>,
     setDataState(value);
   }, [cacheKey]);
 
-  return { data, error, loading, refreshing, retry: load, setData };
+  const retry = useCallback(() => load(true), [load]);
+
+  return { data, error, loading, refreshing, retry, setData };
 }

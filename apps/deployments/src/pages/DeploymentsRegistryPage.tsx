@@ -23,7 +23,7 @@ export function DeploymentsRegistryPage() {
         <div className="deployment-list-card__body">
           <div className="deployment-list-card__title"><Link to={`/deployments/${deployment.id}`}>{deployment.name}</Link><StatusBadge tone="success">{deployment.status === "active" ? "Active" : deployment.status}</StatusBadge><StatusBadge tone={deployment.environment === "production" ? "primary" : "neutral"}>{environmentLabel(deployment.environment)}</StatusBadge></div>
           <a className="deployment-url" href={deployment.url} target="_blank" rel="noreferrer"><AppIcon name="externalLink" size={14} aria-hidden />{deployment.url}</a>
-          <div className="deployment-list-card__meta"><span>Проект: <a href={`/projects/${deployment.project.id}`}>{deployment.project.name}</a></span><span>Модель: <a href={`/models/${deployment.model.id}`}>{deployment.model.name}</a></span><span className="deployment-version">{deployment.modelVersion}</span><span>Трафик: {deployment.trafficPercent}%</span></div>
+          <div className="deployment-list-card__meta"><span>Проект: <Link to={`/projects/${deployment.project.id}`}>{deployment.project.name}</Link></span><span>Модель: <Link to={`/models/${deployment.model.id}`}>{deployment.model.name}</Link></span><span className="deployment-version">{deployment.modelVersion}</span><span>Трафик: {deployment.trafficPercent}%</span></div>
         </div>
         <div className="deployment-list-card__date"><span>Развёрнуто</span><strong>{formatDate(deployment.deployedAt)}</strong><span>{deployment.deployedBy}</span></div>
       </article>)}

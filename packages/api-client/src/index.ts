@@ -11,16 +11,8 @@ export interface ApiClient {
   delete<TResponse>(path: string): Promise<TResponse>;
 }
 
-export function getMockDelayMs(value: string | undefined): number {
-  if (!value) return 0;
-  const parsed = Number.parseInt(value, 10);
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
-}
-
-export async function waitForMockDelay(value: string | undefined): Promise<void> {
-  const delayMs = getMockDelayMs(value);
-  if (delayMs === 0) return;
-  await new Promise<void>((resolve) => setTimeout(resolve, delayMs));
+export function waitForMockDelay(_value: string | undefined): Promise<void> {
+  return Promise.resolve();
 }
 
 export function createApiClient(options: ApiClientOptions): ApiClient {
