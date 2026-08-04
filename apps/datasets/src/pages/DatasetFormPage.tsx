@@ -31,7 +31,7 @@ export function DatasetFormPage() {
     finally { setSubmitting(false); }
   }
 
-  return <section className="datasets-page">
+  return <section className="datasets-page dataset-form-page">
     <button className="back-link" onClick={() => navigate("/datasets")} aria-label="Назад"><AppIcon name="arrowLeft" size={22} aria-hidden /></button>
     <header className="datasets-heading detail-heading"><div><h1>Регистрация датасета</h1><p>Добавьте набор данных в реестр платформы</p></div></header>
     <form className="dataset-form" onSubmit={submit}>

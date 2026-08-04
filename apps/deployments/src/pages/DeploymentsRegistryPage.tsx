@@ -18,7 +18,7 @@ export function DeploymentsRegistryPage() {
     </header>
     <div className="deployments-search-panel"><label className="deployments-search"><AppIcon name="search" size={19} aria-hidden /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Поиск по URL эндпоинта..." aria-label="Поиск по URL эндпоинта" /></label></div>
     {loading ? <div className="deployments-state-card"><LoadingState label="Загрузка развёртываний…" /></div> : error ? <div className="deployments-state-card"><ErrorState title="Не удалось загрузить развёртывания" description="Проверьте API и повторите попытку." onRetry={retry} /></div> : filtered.length === 0 ? <div className="deployments-state-card"><EmptyState title={query ? "Ничего не найдено" : "Развёртываний пока нет"} description={query ? "Измените поисковый запрос." : "Создайте первое развёртывание модели."} /></div> : <div className="deployment-list">
-      {filtered.map((deployment, index) => <article className={`deployment-list-card ${index === 0 ? "deployment-list-card--featured" : ""}`} key={deployment.id}>
+      {filtered.map((deployment) => <article className="deployment-list-card" key={deployment.id}>
         <div className={`deployment-list-card__icon deployment-list-card__icon--${deployment.environment}`}><AppIcon name="server" size={28} aria-hidden /></div>
         <div className="deployment-list-card__body">
           <div className="deployment-list-card__title"><Link to={`/deployments/${deployment.id}`}>{deployment.name}</Link><StatusBadge tone="success">{deployment.status === "active" ? "Active" : deployment.status}</StatusBadge><StatusBadge tone={deployment.environment === "production" ? "primary" : "neutral"}>{environmentLabel(deployment.environment)}</StatusBadge></div>
