@@ -1,6 +1,6 @@
 .monitoring-page, .monitoring-page * { box-sizing: border-box; }
-.monitoring-page { width: 100%; min-height: calc(100vh - 68px); padding: 30px 30px 48px; color: var(--ui-color-text); font-family: "Plus Jakarta Sans", sans-serif; }
-.monitoring-registry { max-width: 1240px; }
+.monitoring-page { width: 100%; min-height: 0; padding: 30px 30px 24px; color: var(--ui-color-text); font-family: "Plus Jakarta Sans", sans-serif; }
+.monitoring-registry { width: 100%; max-width: none; }
 .route-content > .monitoring-registry { padding: 0; }
 .monitoring-page h1, .monitoring-page h2, .monitoring-page p { margin: 0; }
 .monitoring-page-header { margin-bottom: 24px; }

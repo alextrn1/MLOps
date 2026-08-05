@@ -6,7 +6,7 @@ body { margin: 0; }
 .experiments-page h1 { font-size: 24px; font-weight: 700; line-height: 32px; letter-spacing: -.025em; }
 .experiments-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
 .experiments-heading p, .new-experiment-heading p { margin-top: 4px; color: var(--ui-color-muted); font-size: 14px; line-height: 20px; }
-.run-experiment-button { min-width: 168px; min-height: 37px; font-weight: 600; }
+.run-experiment-button { min-width: 168px; min-height: 37px; font-weight: 400; }
 
 .experiments-toolbar { position: relative; display: flex; min-height: 70px; align-items: center; gap: 16px; margin-bottom: 24px; border: 1px solid var(--ui-color-border); border-radius: 8px; padding: 16px; background: #fff; }
 .experiments-search { position: relative; width: 448px; max-width: calc(100% - 132px); }
