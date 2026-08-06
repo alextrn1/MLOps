@@ -3,7 +3,7 @@
 .dashboard-standalone { min-height: 100vh; padding: 24px; background: var(--ui-color-bg); }
 
 .metrics-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-bottom: 24px; }
-.metric-card { display: flex; height: 150px; min-height: 150px; flex-direction: column; gap: 4px; padding: 24px; transition: transform .16s ease, box-shadow .16s ease; }
+.metric-card { display: flex; height: 128px; min-height: 128px; flex-direction: column; gap: 3px; padding: 20px 24px; transition: transform .16s ease, box-shadow .16s ease; }
 .metric-card:hover { transform: translateY(-1px); box-shadow: 0 8px 22px rgb(15 23 41 / 8%); }
 .metric-card__header { display: flex; align-items: center; justify-content: space-between; color: var(--ui-color-muted); font-size: 14px; font-weight: 500; line-height: 20px; }
 .metric-card__header span { min-width: 0; }
