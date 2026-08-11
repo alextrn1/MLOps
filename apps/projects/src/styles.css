@@ -128,3 +128,44 @@ body { margin: 0; }
   .projects-table td:first-child::before { display: none; }
   .project-description { white-space: normal; }
 }
+/* Unified create-page layout */
+.project-form-card {
+  width: min(1240px, calc(100% - 52px)) !important;
+  max-width: 1240px !important;
+}
+
+@media (max-width: 820px) {
+  .form-page {
+    width: 100% !important;
+    max-width: none !important;
+    padding-inline: 16px !important;
+    overflow-x: hidden;
+  }
+
+  .form-page-heading,
+  .project-form-card {
+    width: 100% !important;
+    max-width: none !important;
+    margin-left: 0 !important;
+    box-sizing: border-box;
+  }
+
+  .project-form-grid,
+  .project-form-card .form-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .project-form-card input,
+  .project-form-card select,
+  .project-form-card textarea {
+    width: 100% !important;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .project-form-actions,
+  .project-form-card .form-actions {
+    flex-wrap: wrap;
+    max-width: 100%;
+  }
+}

@@ -185,3 +185,44 @@ body { margin: 0; }
   .model-version-heading h1 { font-size: 21px; }
   .version-stage-card { grid-template-columns: 1fr; }
 }
+/* Unified create-page layout */
+.model-form-card {
+  width: min(1240px, calc(100% - 52px)) !important;
+  max-width: 1240px !important;
+}
+
+@media (max-width: 820px) {
+  .model-form-page {
+    width: 100% !important;
+    max-width: none !important;
+    padding-inline: 16px !important;
+    overflow-x: hidden;
+  }
+
+  .model-form-heading,
+  .model-form-card {
+    width: 100% !important;
+    max-width: none !important;
+    margin-left: 0 !important;
+    box-sizing: border-box;
+  }
+
+  .model-form-grid,
+  .model-form-card .form-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .model-form-card input,
+  .model-form-card select,
+  .model-form-card textarea {
+    width: 100% !important;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .model-form-actions,
+  .model-form-card .form-actions {
+    flex-wrap: wrap;
+    max-width: 100%;
+  }
+}
