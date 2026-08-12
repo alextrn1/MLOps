@@ -24,20 +24,35 @@ let deployments: DeploymentDto[] = [
   { id: "dep4", name: "ocr", status: "active", environment: "production", url: "https://api.internal/ml/v1/ocr", project: { id: "p3", name: "Распознавание документов" }, model: { id: "m3", name: "DocYOLO_Entities" }, modelVersionId: "v400", modelVersion: "v4.0.0", trafficPercent: 100, deployedAt: "2023-10-10", deployedBy: "CI/CD Pipeline" }
 ];
 
-const baseLatencies = [48,34,41,46,37,43,45,39,42,38,48,35,42,40,44,36,49,38,41,39,47,42,36,33];
-const baseRequests = [1800,1650,1720,1880,1590,1810,1750,1640,1830,1680,1900,1620,1740,1710,1800,1650,1880,1690,1760,1680,1910,1790,1700,1660];
+const metricSeries: Record<string, { latencies: number[]; requests: number[] }> = {
+  dep1: {
+    latencies: [48,31,43,46,33,36,30,41,44,39,34,52,178,171,36,34,45,47,31,29,38,32,44,37],
+    requests: [1500,1240,1310,1460,1120,1080,1010,1160,1380,1210,1100,1260,6720,6120,1280,1010,1430,1510,1180,1360,1090,1420,1260,980]
+  },
+  dep2: {
+    latencies: [31,44,48,36,43,39,37,40,47,43,32,35,218,194,31,37,46,39,36,35,36,42,33,49],
+    requests: [1420,1370,1210,1530,1590,1390,1260,1190,1320,1480,1180,1250,5960,5480,1610,1560,1490,1580,1510,1620,1390,1710,1580,1280]
+  },
+  dep3: {
+    latencies: [34,43,45,37,48,31,46,46,46,38,45,36,184,176,47,43,36,34,40,43,48,30,44,35],
+    requests: [1490,1710,1240,1080,1130,1190,1060,1310,1120,1090,1450,1370,5850,6370,1410,1580,1440,1230,1070,1330,1540,1610,1360,1210]
+  },
+  dep4: {
+    latencies: [37,47,34,49,39,48,33,35,42,48,43,31,148,185,46,32,45,45,39,41,33,31,37,29],
+    requests: [1520,1090,1410,1280,1230,1120,1340,1270,1290,1080,1130,1200,4820,6030,1260,1190,1470,970,1030,1310,1450,1220,1380,1060]
+  }
+};
 
 function metricPoints(deploymentId: string): DeploymentMetricPointDto[] {
-  const offset = deploymentId === "dep2" ? 1 : deploymentId === "dep3" ? 4 : deploymentId === "dep4" ? 7 : 0;
-  return baseLatencies.map((latency, index) => {
-    const spike = index === 12 ? 190 + offset * 6 : index === 13 ? 165 + offset * 4 : 0;
+  const series = metricSeries[deploymentId] ?? metricSeries.dep1;
+  return series.latencies.map((latency, index) => {
     const hour = (23 + index) % 24;
     const minute = deploymentId === "dep1" ? 53 : deploymentId === "dep2" ? 54 : 57;
     return {
       timestamp: `2024-04-14T${String(hour).padStart(2, "0")}:${minute}:00Z`,
       timeLabel: `${String(hour).padStart(2, "0")}:${minute}`,
-      latencyP95Ms: spike || latency + offset,
-      requestsPerHour: spike ? 5564 + offset * 80 : baseRequests[index] + offset * 25,
+      latencyP95Ms: latency,
+      requestsPerHour: series.requests[index],
       errorRatePercent: index === 12 ? 0.08 : 0.02
     };
   });

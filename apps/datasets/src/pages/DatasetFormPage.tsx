@@ -32,8 +32,7 @@ export function DatasetFormPage() {
   }
 
   return <section className="datasets-page dataset-form-page">
-    <button className="back-link" onClick={() => navigate("/datasets")} aria-label="Назад"><AppIcon name="arrowLeft" size={22} aria-hidden /></button>
-    <header className="datasets-heading detail-heading"><div><h1>Регистрация датасета</h1><p>Добавьте набор данных в реестр платформы</p></div></header>
+    <header className="datasets-heading detail-heading"><button className="back-link" onClick={() => navigate("/datasets")} aria-label="Назад"><AppIcon name="arrowLeft" size={22} aria-hidden /></button><div><h1>Регистрация датасета</h1><p>Добавьте набор данных в реестр платформы</p></div></header>
     <form className="dataset-form" onSubmit={submit}>
       {error ? <Notice tone="error">{error}</Notice> : null}
       <TextField label="Название" value={form.name} onChange={(event: ChangeEvent<HTMLInputElement>) => set("name", event.target.value)} error={errors.name} placeholder="Например, retail_credit_history_v3" />

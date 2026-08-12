@@ -7,6 +7,22 @@ const plot = { left: 68, right: 64, top: 28, bottom: 65 };
 const plotWidth = width - plot.left - plot.right;
 const plotHeight = height - plot.top - plot.bottom;
 
+const monotonePath = (points: Array<{ x: number; y: number }>) => {
+  if (points.length < 2) return points[0] ? `M${points[0].x.toFixed(1)},${points[0].y.toFixed(1)}` : "";
+  const slopes = points.slice(1).map((point, index) => (point.y - points[index].y) / (point.x - points[index].x));
+  const tangents = points.map((_, index) => {
+    if (index === 0) return slopes[0];
+    if (index === points.length - 1) return slopes[slopes.length - 1];
+    return slopes[index - 1] * slopes[index] <= 0 ? 0 : (slopes[index - 1] + slopes[index]) / 2;
+  });
+
+  return points.slice(1).reduce((path, point, index) => {
+    const previous = points[index];
+    const width = point.x - previous.x;
+    return `${path} C${(previous.x + width / 3).toFixed(1)},${(previous.y + tangents[index] * width / 3).toFixed(1)} ${(point.x - width / 3).toFixed(1)},${(point.y - tangents[index + 1] * width / 3).toFixed(1)} ${point.x.toFixed(1)},${point.y.toFixed(1)}`;
+  }, `M${points[0].x.toFixed(1)},${points[0].y.toFixed(1)}`);
+};
+
 export function DeploymentMetricsChart({ metrics }: { metrics: DeploymentMetricsDto }) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const maxLatency = Math.max(160, Math.ceil(Math.max(...metrics.points.map((point) => point.latencyP95Ms)) / 40) * 40);
@@ -14,7 +30,7 @@ export function DeploymentMetricsChart({ metrics }: { metrics: DeploymentMetrics
   const x = (index: number) => plot.left + index / Math.max(1, metrics.points.length - 1) * plotWidth;
   const latencyY = (value: number) => plot.top + plotHeight - value / maxLatency * plotHeight;
   const requestsY = (value: number) => plot.top + plotHeight - value / maxRequests * plotHeight;
-  const linePath = (key: "latencyP95Ms" | "requestsPerHour", scale: (value: number) => number) => metrics.points.map((point, index) => `${index ? "L" : "M"}${x(index).toFixed(1)},${scale(point[key]).toFixed(1)}`).join(" ");
+  const linePath = (key: "latencyP95Ms" | "requestsPerHour", scale: (value: number) => number) => monotonePath(metrics.points.map((point, index) => ({ x: x(index), y: scale(point[key]) })));
   const latencyPath = useMemo(() => linePath("latencyP95Ms", latencyY), [metrics, maxLatency]);
   const requestsPath = useMemo(() => linePath("requestsPerHour", requestsY), [metrics]);
   const activePoint = activeIndex === null ? null : metrics.points[activeIndex];
