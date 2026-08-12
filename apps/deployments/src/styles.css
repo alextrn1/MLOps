@@ -116,6 +116,7 @@
   .deployment-side-column { grid-template-columns: 1fr 1fr; }
   .deployment-metrics-card { min-height: auto; }
 }
+
 @media (max-width: 850px) {
   .deployments-page { padding: 24px 20px 40px; }
   .deployments-page-header { align-items: flex-start; flex-direction: column; }
@@ -392,5 +393,11 @@
   .deployment-detail-heading h1 {
     font-size: 20px;
     line-height: 28px;
+  }
+}
+
+@media (max-width: 600px) {
+  .route-content > .deployments-page {
+    padding: 0 !important;
   }
 }

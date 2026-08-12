@@ -316,3 +316,9 @@
     line-height: 28px;
   }
 }
+
+@media (max-width: 600px) {
+  .route-content > .datasets-page {
+    padding: 0 !important;
+  }
+}
