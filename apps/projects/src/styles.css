@@ -106,13 +106,20 @@ body { margin: 0; }
 }
 
 @media (max-width: 600px) {
+  .project-detail-heading,
+  .form-page-heading { align-items: start; gap: 16px; }
+  .project-back { width: 36px; height: 36px; flex: 0 0 36px; color: var(--ui-color-muted); }
+  .project-back svg { width: 23px; height: 23px; stroke-width: 2; }
+}
+
+@media (max-width: 600px) {
   .projects-standalone { padding: 16px; }
   .projects-heading { align-items: flex-start; flex-direction: column; gap: 16px; }
   .new-project-button { width: 100%; }
   .projects-search { padding: 12px; }
   .project-summary-grid { grid-template-columns: 1fr; gap: 12px; }
   .project-summary-card { min-height: 104px; padding: 18px; }
-  .project-detail-heading { gap: 8px; margin-bottom: 24px; }
+  .project-detail-heading { gap: 16px; margin-bottom: 24px; }
   .project-detail-heading__copy > div { align-items: flex-start; flex-direction: column; gap: 6px; }
   .project-detail-heading h1 { font-size: 21px; line-height: 28px; }
   .relation-panel { padding: 18px; }

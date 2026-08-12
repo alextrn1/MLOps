@@ -146,6 +146,7 @@ body { margin: 0; }
   .version-register-grid { grid-template-columns: repeat(2, 1fr); }
   .version-content-grid { grid-template-columns: 1fr; }
 }
+
 @media (max-width: 820px) {
   .model-detail-heading { grid-template-columns: 36px minmax(0, 1fr); }
   .version-register-button { grid-column: 2; width: fit-content; margin-top: 0; }
@@ -157,6 +158,14 @@ body { margin: 0; }
   .models-table th:nth-child(5) { width: 13%; }
   .model-form-card { margin-left: 0; }
   .version-overview-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+  .model-detail-heading,
+  .model-form-heading,
+  .model-version-heading { align-items: start; gap: 16px; }
+  .model-back { width: 36px; height: 36px; flex: 0 0 36px; color: var(--ui-color-muted); }
+  .model-back svg { width: 23px; height: 23px; stroke-width: 2; }
 }
 @media (max-width: 600px) {
   .models-standalone { padding: 16px; }
@@ -175,7 +184,7 @@ body { margin: 0; }
   .models-table td:first-child { display: block; }
   .models-table td:first-child::before { display: none; }
   .model-name-link + span { white-space: normal; }
-  .model-detail-heading { gap: 8px; }
+  .model-detail-heading { gap: 16px; }
   .model-detail-copy h1 { font-size: 21px; }
   .version-register-grid, .model-form-row { grid-template-columns: 1fr; }
   .version-register-actions, .model-form-actions { flex-direction: column-reverse; }

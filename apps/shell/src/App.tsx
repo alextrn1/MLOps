@@ -1,5 +1,5 @@
 import { AppIcon, type AppIconName } from "@mlops/ui";
-import { lazy, useEffect, type ComponentType, type FormEvent } from "react";
+import { lazy, useEffect, useRef, useState, type ComponentType, type FormEvent, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import { NavLink, Navigate, Route, Routes } from "react-router-dom";
 import { RemoteBoundary } from "./RemoteBoundary";
 
@@ -54,36 +54,92 @@ function Remote({ name, component: RemoteComponent }: { name: string; component:
   return <RemoteBoundary name={name}><RemoteComponent /></RemoteBoundary>;
 }
 
+function NavigationLinks({ onNavigate }: { onNavigate?: () => void }) {
+  return navigation.map((item) => (
+    <NavLink
+      key={item.to}
+      to={item.to}
+      end={item.end}
+      title={item.label}
+      onClick={onNavigate}
+      onMouseEnter={() => void item.preload()}
+      onFocus={() => void item.preload()}
+      className={({ isActive }) => isActive ? "nav-link nav-link--active" : "nav-link"}
+    >
+      <AppIcon name={item.icon} size={18} aria-hidden />
+      <span className="nav-link__label">{item.label}</span>
+      {item.badge ? <span className="nav-link__badge">{item.badge}</span> : null}
+    </NavLink>
+  ));
+}
+
 function Sidebar() {
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const drawerRef = useRef<HTMLDivElement>(null);
+
+  const closeDrawer = () => {
+    setDrawerOpen(false);
+    window.requestAnimationFrame(() => menuButtonRef.current?.focus());
+  };
+
+  useEffect(() => {
+    if (!drawerOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    closeButtonRef.current?.focus();
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closeDrawer();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [drawerOpen]);
+
+  const keepFocusInside = (event: ReactKeyboardEvent<HTMLDivElement>) => {
+    if (event.key !== "Tab") return;
+    const focusable = drawerRef.current?.querySelectorAll<HTMLElement>('button, a[href]');
+    if (!focusable?.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  };
+
   return (
     <aside className="sidebar">
       <div className="brand">
-        <AppIcon name="box" size={24} strokeWidth={2.1} aria-hidden />
-        <span>MLOps Studio</span>
+        <div className="brand__identity"><AppIcon name="box" size={24} strokeWidth={2.1} aria-hidden /><span>MLOps Studio</span></div>
+        <button ref={menuButtonRef} className="mobile-menu-button" type="button" aria-label="Открыть меню" aria-controls="mobile-navigation-drawer" aria-expanded={drawerOpen} onClick={() => setDrawerOpen(true)}><span aria-hidden /><span aria-hidden /><span aria-hidden /></button>
       </div>
       <div className="sidebar__body">
         <div className="sidebar__label">Платформа</div>
         <nav className="sidebar__nav" aria-label="Основная навигация">
-          {navigation.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              end={item.end}
-              title={item.label}
-              onMouseEnter={() => void item.preload()}
-              onFocus={() => void item.preload()}
-              className={({ isActive }) => isActive ? "nav-link nav-link--active" : "nav-link"}
-            >
-              <AppIcon name={item.icon} size={18} aria-hidden />
-              <span className="nav-link__label">{item.label}</span>
-              {item.badge ? <span className="nav-link__badge">{item.badge}</span> : null}
-            </NavLink>
-          ))}
+          <NavigationLinks />
         </nav>
       </div>
       <div className="profile">
         <span className="profile__avatar">{profile.initials}</span>
         <div className="profile__details"><strong>{profile.name}</strong><span>{profile.role}</span></div>
+      </div>
+      <button className={`mobile-drawer-overlay${drawerOpen ? " mobile-drawer-overlay--open" : ""}`} type="button" aria-label="Закрыть меню" tabIndex={drawerOpen ? 0 : -1} onClick={closeDrawer} />
+      <div ref={drawerRef} id="mobile-navigation-drawer" className={`mobile-drawer${drawerOpen ? " mobile-drawer--open" : ""}`} role="dialog" aria-modal="true" aria-label="Навигация MLOps Studio" aria-hidden={!drawerOpen} onKeyDown={keepFocusInside}>
+        <div className="mobile-drawer__header">
+          <div className="brand__identity"><AppIcon name="box" size={24} strokeWidth={2.1} aria-hidden /><span>MLOps Studio</span></div>
+          <button ref={closeButtonRef} className="mobile-drawer__close" type="button" aria-label="Закрыть меню" onClick={closeDrawer}><span aria-hidden /><span aria-hidden /></button>
+        </div>
+        <div className="mobile-drawer__body">
+          <div className="mobile-drawer__label">Платформа</div>
+          <nav className="mobile-drawer__nav" aria-label="Мобильная навигация"><NavigationLinks onNavigate={closeDrawer} /></nav>
+        </div>
       </div>
     </aside>
   );
