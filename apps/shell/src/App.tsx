@@ -2,6 +2,7 @@ import { AppIcon, type AppIconName } from "@mlops/ui";
 import { lazy, useEffect, useRef, useState, type ComponentType, type FormEvent, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import { NavLink, Navigate, Route, Routes } from "react-router-dom";
 import { RemoteBoundary } from "./RemoteBoundary";
+import { currentUser, type ShellUser } from "./user";
 
 function memoizeImport<T>(load: () => Promise<T>): () => Promise<T> {
   let pending: Promise<T> | undefined;
@@ -44,12 +45,6 @@ const navigation: readonly NavigationItem[] = [
   { to: "/monitoring", label: "Мониторинг", icon: "bell", badge: "2", preload: loadMonitoring }
 ];
 
-const profile = {
-  initials: "AS",
-  name: "Анна Смирнова",
-  role: "Lead Data Scientist"
-} as const;
-
 function Remote({ name, component: RemoteComponent }: { name: string; component: ComponentType }) {
   return <RemoteBoundary name={name}><RemoteComponent /></RemoteBoundary>;
 }
@@ -71,6 +66,14 @@ function NavigationLinks({ onNavigate }: { onNavigate?: () => void }) {
       {item.badge ? <span className="nav-link__badge">{item.badge}</span> : null}
     </NavLink>
   ));
+}
+
+function UserIdentity({ user }: { user: ShellUser }) {
+  return <><span className="profile__avatar">{user.avatar ? <img src={user.avatar} alt="" /> : user.initials}</span><div className="profile__details"><strong>{user.name}</strong><span>{user.role}</span></div></>;
+}
+
+function UserBlock({ user }: { user: ShellUser }) {
+  return <div className="mobile-drawer__user"><button className="mobile-drawer__user-button" type="button" aria-label={`Профиль пользователя: ${user.name}`}><UserIdentity user={user} /></button></div>;
 }
 
 function Sidebar() {
@@ -127,8 +130,7 @@ function Sidebar() {
         </nav>
       </div>
       <div className="profile">
-        <span className="profile__avatar">{profile.initials}</span>
-        <div className="profile__details"><strong>{profile.name}</strong><span>{profile.role}</span></div>
+        <UserIdentity user={currentUser} />
       </div>
       <button className={`mobile-drawer-overlay${drawerOpen ? " mobile-drawer-overlay--open" : ""}`} type="button" aria-label="Закрыть меню" tabIndex={drawerOpen ? 0 : -1} onClick={closeDrawer} />
       <div ref={drawerRef} id="mobile-navigation-drawer" className={`mobile-drawer${drawerOpen ? " mobile-drawer--open" : ""}`} role="dialog" aria-modal="true" aria-label="Навигация MLOps Studio" aria-hidden={!drawerOpen} onKeyDown={keepFocusInside}>
@@ -140,6 +142,7 @@ function Sidebar() {
           <div className="mobile-drawer__label">Платформа</div>
           <nav className="mobile-drawer__nav" aria-label="Мобильная навигация"><NavigationLinks onNavigate={closeDrawer} /></nav>
         </div>
+        <UserBlock user={currentUser} />
       </div>
     </aside>
   );

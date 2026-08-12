@@ -71,7 +71,7 @@ export function ProjectFormPage({ mode }: { mode: "create" | "edit" }) {
   if (state === "error") return <ErrorState title="Не удалось открыть форму" description="Проверьте подключение к API и попробуйте снова." onRetry={() => setReloadKey((value) => value + 1)} />;
 
   return <section className="projects-page project-form-page">
-    <div className="form-page-heading"><button className="project-back" type="button" onClick={() => navigate(cancelUrl)} aria-label="Назад"><AppIcon name="arrowLeft" size={20} aria-hidden /></button><div><h1>{title}</h1><p>{subtitle}</p></div></div>
+    <div className="form-page-heading"><button className="project-back" type="button" onClick={() => navigate(cancelUrl)} aria-label="Назад"><AppIcon name="arrowLeft" size={22} aria-hidden /></button><div><h1>{title}</h1><p>{subtitle}</p></div></div>
     <form className="project-form-card" onSubmit={handleSubmit} noValidate>
       <div className="project-form-card__header"><h2>Основная информация</h2><p>Поля со звёздочкой обязательны для заполнения.</p></div>
       <div className="project-form-grid">
