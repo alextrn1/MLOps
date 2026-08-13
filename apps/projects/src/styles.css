@@ -108,7 +108,7 @@ body { margin: 0; }
 @media (max-width: 600px) {
   .project-detail-heading,
   .form-page-heading { align-items: start; gap: 16px; }
-  .project-back { display: inline-flex; width: 36px; height: 36px; flex: 0 0 36px; align-items: center; justify-content: center; border-radius: 999px; padding: 0; background: #eef2f7; color: var(--ui-color-muted); }
+  .project-back { display: inline-flex; width: 36px; height: 36px; flex: 0 0 36px; align-items: center; justify-content: center; border-radius: 999px; padding: 0; background: transparent; color: var(--ui-color-muted); }
   .project-back svg { width: 20px !important; height: 20px !important; stroke-width: 1.8; }
 }
 

@@ -164,7 +164,7 @@ body { margin: 0; }
   .model-detail-heading,
   .model-form-heading,
   .model-version-heading { align-items: start; gap: 16px; }
-  .model-back { display: inline-flex; width: 36px; height: 36px; flex: 0 0 36px; align-items: center; justify-content: center; border-radius: 999px; padding: 0; background: #eef2f7; color: var(--ui-color-muted); }
+  .model-back { display: inline-flex; width: 36px; height: 36px; flex: 0 0 36px; align-items: center; justify-content: center; border-radius: 999px; padding: 0; background: transparent; color: var(--ui-color-muted); }
   .model-back svg { width: 20px !important; height: 20px !important; stroke-width: 1.8; }
 }
 @media (max-width: 600px) {
