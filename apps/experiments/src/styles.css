@@ -184,3 +184,9 @@ body { margin: 0; }
     max-width: 100%;
   }
 }
+
+@media (max-width: 600px) {
+  .new-experiment-page {
+    padding-inline: 0 !important;
+  }
+}
