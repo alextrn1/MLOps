@@ -322,9 +322,9 @@
     padding: 0 !important;
   }
 
-  .dataset-form-page .detail-heading { align-items: flex-start; flex-direction: row; gap: 16px; }
+  .dataset-form-page .detail-heading { align-items: flex-start; flex-direction: row; gap: 16px; margin-bottom: 24px; }
   .dataset-form-page .back-link { position: static; width: 36px; height: 36px; flex: 0 0 36px; color: var(--ui-color-muted); }
   .datasets-page:not(.datasets-registry-page):not(.dataset-form-page) > .back-link { top: 0; left: 0; width: 36px; height: 36px; color: var(--ui-color-muted); }
   .datasets-page:not(.datasets-registry-page):not(.dataset-form-page) > .detail-heading { width: calc(100% - 52px); margin-left: 52px; }
-  .back-link svg { width: 23px; height: 23px; stroke-width: 2; }
+  .dataset-form-page .back-link svg { width: 23px !important; height: 23px !important; stroke-width: 2; }
 }

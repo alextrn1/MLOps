@@ -73,7 +73,6 @@ export function ProjectFormPage({ mode }: { mode: "create" | "edit" }) {
   return <section className="projects-page project-form-page">
     <div className="form-page-heading"><button className="project-back" type="button" onClick={() => navigate(cancelUrl)} aria-label="Назад"><AppIcon name="arrowLeft" size={22} aria-hidden /></button><div><h1>{title}</h1><p>{subtitle}</p></div></div>
     <form className="project-form-card" onSubmit={handleSubmit} noValidate>
-      <div className="project-form-card__header"><h2>Основная информация</h2><p>Поля со звёздочкой обязательны для заполнения.</p></div>
       <div className="project-form-grid">
         {saved ? <Notice>Проект сохранён. Выполняется переход…</Notice> : null}
         {submitError ? <Notice tone="error">{submitError}</Notice> : null}
