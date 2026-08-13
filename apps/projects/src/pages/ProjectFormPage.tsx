@@ -1,7 +1,7 @@
 import type { CreateProjectDto, ProjectDto, ProjectOwnerDto, ProjectStatus } from "@mlops/contracts";
 import { AppIcon, Button, DelayedLoadingState, ErrorState, Notice, SelectField, TextField } from "@mlops/ui";
 import { type ChangeEvent, type FormEvent, useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { isProjectNotFoundError, projectsApi } from "../api";
 import { projectStatusOptions } from "../projectViewModel";
 import { ProjectNotFoundPage } from "./ProjectNotFoundPage";
@@ -71,16 +71,16 @@ export function ProjectFormPage({ mode }: { mode: "create" | "edit" }) {
   if (state === "error") return <ErrorState title="Не удалось открыть форму" description="Проверьте подключение к API и попробуйте снова." onRetry={() => setReloadKey((value) => value + 1)} />;
 
   return <section className="projects-page project-form-page">
-    <div className="form-page-heading"><button className="project-back" type="button" onClick={() => navigate(cancelUrl)} aria-label="Назад"><AppIcon name="arrowLeft" size={22} aria-hidden /></button><div><h1>{title}</h1><p>{subtitle}</p></div></div>
+    <div className="form-page-heading"><Link className="project-back" to={cancelUrl} aria-label="Назад"><AppIcon name="arrowLeft" size={22} aria-hidden /></Link><div><h1>{title}</h1><p>{subtitle}</p></div></div>
     <form className="project-form-card" onSubmit={handleSubmit} noValidate>
       <div className="project-form-grid">
         {saved ? <Notice>Проект сохранён. Выполняется переход…</Notice> : null}
         {submitError ? <Notice tone="error">{submitError}</Notice> : null}
-        <TextField label="Название проекта *" value={values.name} onChange={(event: ChangeEvent<HTMLInputElement>) => update("name", event.currentTarget.value)} placeholder="Например, Кредитный Скоринг Retail" error={errors.name} disabled={submitting} />
-        <TextField label="Описание *" textarea value={values.description} onChange={(event: ChangeEvent<HTMLTextAreaElement>) => update("description", event.currentTarget.value)} placeholder="Кратко опишите цель проекта" error={errors.description} disabled={submitting} />
+        <TextField label="Название проекта" value={values.name} onChange={(event: ChangeEvent<HTMLInputElement>) => update("name", event.currentTarget.value)} placeholder="Например, Кредитный Скоринг Retail" error={errors.name} disabled={submitting} />
+        <TextField label="Описание" textarea value={values.description} onChange={(event: ChangeEvent<HTMLTextAreaElement>) => update("description", event.currentTarget.value)} placeholder="Кратко опишите цель проекта" error={errors.description} disabled={submitting} />
         <div className="project-form-row">
-          <SelectField label="Владелец *" value={values.ownerId} onChange={(event) => update("ownerId", event.currentTarget.value)} error={errors.ownerId} disabled={submitting}>{ownerOptions.map((owner) => <option key={owner.value} value={owner.value}>{owner.label}</option>)}</SelectField>
-          <SelectField label="Статус *" value={values.status} onChange={(event) => update("status", event.currentTarget.value as ProjectStatus)} error={errors.status} disabled={submitting}>{projectStatusOptions.map((status) => <option key={status.value} value={status.value}>{status.label}</option>)}</SelectField>
+          <SelectField label="Владелец" value={values.ownerId} onChange={(event) => update("ownerId", event.currentTarget.value)} error={errors.ownerId} disabled={submitting}>{ownerOptions.map((owner) => <option key={owner.value} value={owner.value}>{owner.label}</option>)}</SelectField>
+          <SelectField label="Статус" value={values.status} onChange={(event) => update("status", event.currentTarget.value as ProjectStatus)} error={errors.status} disabled={submitting}>{projectStatusOptions.map((status) => <option key={status.value} value={status.value}>{status.label}</option>)}</SelectField>
         </div>
       </div>
       <div className="project-form-actions"><Button type="button" variant="secondary" onClick={() => navigate(cancelUrl)} disabled={submitting}>Отмена</Button><Button type="submit" disabled={submitting || saved}>{submitting ? <><span className="button-spinner" aria-hidden />Сохранение…</> : mode === "create" ? "Создать проект" : "Сохранить изменения"}</Button></div>
