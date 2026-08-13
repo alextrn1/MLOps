@@ -44,6 +44,12 @@
 .incident-detail-header { min-height: 64px; display: grid; grid-template-columns: 36px 36px minmax(0, 1fr); align-items: start; gap: 8px; margin-bottom: 24px; }
 .incident-detail-header > a { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 8px; color: var(--ui-color-muted); text-decoration: none; }
 .incident-detail-header > a:hover { background: #edf1f6; color: var(--ui-color-text); }
+@media (min-width: 601px) {
+  .incident-detail-header > a { display: inline-flex; width: 36px; height: 36px; align-items: center; justify-content: center; border-radius: 999px; background: transparent; transition: background .15s ease, color .15s ease; }
+  .incident-detail-header > a svg { width: 22px; height: 22px; stroke-width: 1.8; }
+  .incident-detail-header > a:hover { background: #eef2f7; color: var(--ui-color-text); }
+  .incident-detail-header > a:focus-visible { outline: 2px solid rgb(73 60 221 / 35%); outline-offset: 2px; }
+}
 .incident-detail-icon { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 6px; }
 .incident-detail-icon--critical { background: #feeaea; color: #ff4343; }.incident-detail-icon--warning { background: #fff8dd; color: #f1ac00; }.incident-detail-icon--resolved { background: #e7f9ed; color: #00bd5c; }
 .incident-detail-header h1 { min-width: 0; font-size: 24px; font-weight: 700; letter-spacing: -.025em; line-height: 32px; overflow-wrap: anywhere; }
@@ -98,8 +104,8 @@
 
 @media (max-width: 600px) {
   .incident-detail-header { grid-template-columns: 36px 32px minmax(0, 1fr); }
-  .incident-detail-header > a { width: 36px; height: 36px; color: var(--ui-color-muted); }
-  .incident-detail-header > a svg { width: 23px; height: 23px; stroke-width: 2; }
+  .incident-detail-header > a { display: grid; width: 36px; height: 36px; place-items: center; border-radius: 999px; padding: 0; background: #eef2f7; color: var(--ui-color-muted); }
+  .incident-detail-header > a svg { width: 20px; height: 20px; stroke-width: 1.8; }
 }
 @media (max-width: 600px) {
   .monitoring-page { padding-inline: 12px; }
@@ -108,7 +114,7 @@
   .monitoring-table th:nth-child(5) { width: 103px; }
   .monitoring-table__incident p { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
   .incident-detail { padding: 0; }
-  .incident-detail-header { grid-template-columns: 36px 32px minmax(0, 1fr); gap: 6px; }
+  .incident-detail-header { grid-template-columns: 36px 32px minmax(0, 1fr); gap: 16px; }
   .incident-detail-header > a { width: 36px; height: 36px; }
   .incident-detail-icon { width: 32px; height: 32px; }
   .incident-detected { width: 100%; }

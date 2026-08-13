@@ -40,6 +40,9 @@ body { margin: 0; }
 .project-back { display: inline-flex; width: 36px; height: 36px; align-items: center; justify-content: center; border: 0; border-radius: 999px; background: transparent; color: var(--ui-color-muted); text-decoration: none; transition: background .15s ease, color .15s ease; cursor: pointer; }
 .project-back:hover { background: #eef2f7; color: var(--ui-color-text); }
 .project-back:focus-visible { outline: 2px solid rgb(73 60 221 / 35%); outline-offset: 2px; }
+@media (min-width: 601px) {
+  .project-back svg { width: 22px; height: 22px; stroke-width: 1.8; }
+}
 .project-edit-button { min-width: 154px; margin-top: 10px; }
 .project-details-page > .ui-notice { margin-bottom: 16px; }
 
@@ -105,9 +108,8 @@ body { margin: 0; }
 @media (max-width: 600px) {
   .project-detail-heading,
   .form-page-heading { align-items: start; gap: 16px; }
-  .project-back { width: 36px; height: 36px; flex: 0 0 36px; color: var(--ui-color-muted); }
-  .form-page-heading .project-back { display: grid; place-items: center; border-radius: 8px; padding: 0; }
-  .form-page-heading .project-back svg { width: 23px !important; height: 23px !important; stroke-width: 2; }
+  .project-back { display: inline-flex; width: 36px; height: 36px; flex: 0 0 36px; align-items: center; justify-content: center; border-radius: 999px; padding: 0; background: #eef2f7; color: var(--ui-color-muted); }
+  .project-back svg { width: 20px !important; height: 20px !important; stroke-width: 1.8; }
 }
 
 @media (max-width: 600px) {

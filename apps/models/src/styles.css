@@ -50,6 +50,9 @@ body { margin: 0; }
 .model-back { display: inline-flex; width: 36px; height: 36px; align-items: center; justify-content: center; border: 0; border-radius: 999px; background: transparent; color: var(--ui-color-muted); text-decoration: none; transition: background .15s ease, color .15s ease; cursor: pointer; }
 .model-back:hover { background: #eef2f7; color: var(--ui-color-text); }
 .model-back:focus-visible { outline: 2px solid rgb(73 60 221 / 35%); outline-offset: 2px; }
+@media (min-width: 601px) {
+  .model-back svg { width: 22px; height: 22px; stroke-width: 1.8; }
+}
 .model-meta { display: flex; align-items: center; gap: 12px; margin-top: 4px; color: var(--ui-color-muted); font-size: 14px; line-height: 20px; }
 .model-meta span { display: inline-flex; align-items: center; gap: 5px; }
 .model-meta a { color: var(--ui-color-primary); text-decoration: none; }
@@ -161,9 +164,8 @@ body { margin: 0; }
   .model-detail-heading,
   .model-form-heading,
   .model-version-heading { align-items: start; gap: 16px; }
-  .model-back { width: 36px; height: 36px; flex: 0 0 36px; color: var(--ui-color-muted); }
-  .model-form-heading .model-back { display: grid; place-items: center; border-radius: 8px; padding: 0; }
-  .model-form-heading .model-back svg { width: 23px !important; height: 23px !important; stroke-width: 2; }
+  .model-back { display: inline-flex; width: 36px; height: 36px; flex: 0 0 36px; align-items: center; justify-content: center; border-radius: 999px; padding: 0; background: #eef2f7; color: var(--ui-color-muted); }
+  .model-back svg { width: 20px !important; height: 20px !important; stroke-width: 1.8; }
 }
 @media (max-width: 600px) {
   .models-standalone { padding: 16px; }
