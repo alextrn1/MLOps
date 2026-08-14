@@ -22,7 +22,7 @@ function createMockDashboardApi(): DashboardApi {
 }
 
 const apiMode = import.meta.env.VITE_API_MODE ?? "mock";
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:4010/api/v1";
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:4010";
 
 if (apiMode !== "mock" && apiMode !== "real") {
   throw new Error(`Unsupported VITE_API_MODE: ${apiMode}`);

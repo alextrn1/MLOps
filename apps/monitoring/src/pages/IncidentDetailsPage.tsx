@@ -1,4 +1,4 @@
-import { AppIcon, Button, DelayedLoadingState as LoadingState, ErrorState, Notice } from "@mlops/ui";
+import { AppIcon, Button, DelayedLoadingState as LoadingState, ErrorState, invalidateCachedResources, Notice } from "@mlops/ui";
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { isIncidentNotFound, monitoringApi } from "../api";
@@ -15,7 +15,7 @@ export function IncidentDetailsPage() {
   if (resource.error && isIncidentNotFound(resource.error)) return <IncidentNotFoundPage />;
   if (resource.error || !resource.data) return <section className="monitoring-page"><div className="monitoring-state-card"><ErrorState title="Не удалось загрузить инцидент" description="Проверьте API и повторите попытку." onRetry={resource.retry} /></div></section>;
   const incident = resource.data;
-  const runAction = async (nextAction: Exclude<Action, null>) => { setAction(nextAction); setActionError(""); setSuccess(""); try { const updated = nextAction === "acknowledge" ? await monitoringApi.acknowledgeIncident(incident.id) : await monitoringApi.resolveIncident(incident.id); resource.setData(updated); setSuccess(nextAction === "acknowledge" ? "Инцидент взят в работу" : "Инцидент отмечен как решённый"); } catch { setActionError("Не удалось изменить статус инцидента."); } finally { setAction(null); } };
+  const runAction = async (nextAction: Exclude<Action, null>) => { setAction(nextAction); setActionError(""); setSuccess(""); try { const updated = nextAction === "acknowledge" ? await monitoringApi.acknowledgeIncident(incident.id) : await monitoringApi.resolveIncident(incident.id); invalidateCachedResources("monitoring:[]", `monitoring:${JSON.stringify([incident.id])}`); resource.setData(updated); setSuccess(nextAction === "acknowledge" ? "Инцидент взят в работу" : "Инцидент отмечен как решённый"); } catch { setActionError("Не удалось изменить статус инцидента."); } finally { setAction(null); } };
 
   return <section className="monitoring-page incident-detail">
     <header className="incident-detail-header"><Link to="/monitoring" aria-label="Назад к мониторингу"><AppIcon name="arrowLeft" size={23} aria-hidden /></Link><span className={`incident-detail-icon incident-detail-icon--${incident.status === "resolved" ? "resolved" : incident.severity}`}><IncidentStateIcon incident={incident} size={25} /></span><div><h1>{incident.title}</h1><div className="incident-detail-meta"><span className="incident-code">{incident.type}</span><IncidentStatusBadge status={incident.status} /><span className="incident-detected"><AppIcon name="clock" size={15} aria-hidden />Обнаружен: {formatDateTime(incident.detectedAt)}</span></div></div></header>

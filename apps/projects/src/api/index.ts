@@ -13,7 +13,7 @@ export interface ProjectsApi {
 }
 
 const apiMode = import.meta.env.VITE_API_MODE ?? "mock";
-const baseUrl = import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:3000";
+const baseUrl = import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:4010";
 const http = createApiClient({ baseUrl });
 
 const realProjectsApi: ProjectsApi = {

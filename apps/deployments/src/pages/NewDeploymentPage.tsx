@@ -1,4 +1,4 @@
-import { AppIcon, Button, Notice, SelectField, TextField } from "@mlops/ui";
+import { AppIcon, Button, invalidateCachedResources, Notice, SelectField, TextField } from "@mlops/ui";
 import type { CreateDeploymentDto, DeploymentEnvironment } from "@mlops/contracts";
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -27,6 +27,7 @@ export function NewDeploymentPage() {
     try {
       const payload: CreateDeploymentDto = { ...form, trafficPercent: traffic };
       const created = await deploymentsApi.createDeployment(payload);
+      invalidateCachedResources("deployments:[]");
       navigate(`/deployments/${created.id}`, { replace: true });
     } catch { setApiError("Не удалось создать развёртывание. Повторите попытку."); }
     finally { setSubmitting(false); }

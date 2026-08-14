@@ -16,7 +16,7 @@ export interface DatasetsApi {
 }
 
 const mode = import.meta.env.VITE_API_MODE ?? "mock";
-const http = createApiClient({ baseUrl: import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:3000" });
+const http = createApiClient({ baseUrl: import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:4010" });
 const realDatasetsApi: DatasetsApi = {
   listDatasets: () => http.get("/api/v1/datasets"),
   createDataset: (input) => http.post("/api/v1/datasets", input),

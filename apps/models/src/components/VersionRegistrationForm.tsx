@@ -1,5 +1,5 @@
 import type { CreateModelVersionDto, ModelVersionStage } from "@mlops/contracts";
-import { Button, Notice, SelectField, TextField } from "@mlops/ui";
+import { Button, invalidateCachedResources, Notice, SelectField, TextField } from "@mlops/ui";
 import { type ChangeEvent, type FormEvent, useState } from "react";
 import { modelsApi } from "../api";
 import { stageOptions } from "../modelViewModel";
@@ -14,7 +14,7 @@ export function VersionRegistrationForm({ modelId, onCancel, onCreated }: { mode
   const submit = async (event: FormEvent) => {
     event.preventDefault(); const next = { ...(values.version.trim() ? {} : { version: "Укажите номер версии." }), ...(values.description.trim() ? {} : { description: "Добавьте описание изменений." }) }; setErrors(next); if (Object.keys(next).length) return;
     setSubmitting(true); setSubmitError("");
-    try { await modelsApi.createVersion(modelId, values); onCreated("Версия успешно зарегистрирована."); }
+    try { await modelsApi.createVersion(modelId, values); invalidateCachedResources("models:list", `models:detail:${modelId}`); onCreated("Версия успешно зарегистрирована."); }
     catch { setSubmitError("Не удалось зарегистрировать версию. Попробуйте ещё раз."); setSubmitting(false); }
   };
   return <form className="version-register-form" onSubmit={submit} noValidate>

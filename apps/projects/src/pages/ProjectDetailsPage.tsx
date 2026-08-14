@@ -29,7 +29,7 @@ export function ProjectDetailsPage() {
       <div className="project-detail-heading__copy"><div><h1>{project.name}</h1><ProjectStatusBadge status={project.status} detail /></div><p>{project.description}</p></div>
       <Link className="ui-button ui-button--secondary project-edit-button" to={`/projects/${project.id}/edit`}><AppIcon name="edit" size={17} aria-hidden />Редактировать</Link>
     </div>
-    <ProjectSummaryCards projectId={project.id} summary={summary} />
-    <ProjectRelations projectId={project.id} models={summary.models} deployments={summary.deployments} />
+    <ProjectSummaryCards summary={summary} />
+    <ProjectRelations models={summary.models} deployments={summary.deployments} />
   </section>;
 }

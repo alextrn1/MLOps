@@ -11,6 +11,13 @@ export interface ApiClient {
   delete<TResponse>(path: string): Promise<TResponse>;
 }
 
+export class ApiError extends Error {
+  constructor(public readonly status: number) {
+    super(`API request failed with status ${status}`);
+    this.name = "ApiError";
+  }
+}
+
 export function waitForMockDelay(_value: string | undefined): Promise<void> {
   return Promise.resolve();
 }
@@ -25,7 +32,7 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
         headers: init?.body ? { "Content-Type": "application/json", ...init.headers } : init?.headers
       });
       if (!response.ok) {
-        throw new Error(`API request failed with status ${response.status}`);
+        throw new ApiError(response.status);
       }
       if (response.status === 204) return undefined as TResponse;
       return response.json() as Promise<TResponse>;

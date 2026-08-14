@@ -2,6 +2,15 @@ import { useCallback, useEffect, useRef, useState, type DependencyList } from "r
 
 const resourceCache = new Map<string, unknown>();
 const resourceRequests = new Map<string, Promise<unknown>>();
+const resourceGenerations = new Map<string, number>();
+
+export function invalidateCachedResources(...cacheKeys: string[]): void {
+  for (const cacheKey of cacheKeys) {
+    resourceCache.delete(cacheKey);
+    resourceRequests.delete(cacheKey);
+    resourceGenerations.set(cacheKey, (resourceGenerations.get(cacheKey) ?? 0) + 1);
+  }
+}
 
 export function useDelayedLoading(loading: boolean, delayMs = 200): boolean {
   const [visible, setVisible] = useState(false);
@@ -28,6 +37,7 @@ export function useCachedResource<T>(cacheKey: string, loader: () => Promise<T>,
 
   const load = useCallback(async (force = true) => {
     const currentRequest = ++requestId.current;
+    const generation = resourceGenerations.get(cacheKey) ?? 0;
     const cached = resourceCache.get(cacheKey) as T | undefined;
     if (cached !== undefined && !force) {
       setDataState(cached);
@@ -53,8 +63,10 @@ export function useCachedResource<T>(cacheKey: string, loader: () => Promise<T>,
         resourceRequests.set(cacheKey, request);
       }
       const value = await request;
-      resourceCache.set(cacheKey, value);
-      if (requestId.current === currentRequest) setDataState(value);
+      if ((resourceGenerations.get(cacheKey) ?? 0) === generation) {
+        resourceCache.set(cacheKey, value);
+        if (requestId.current === currentRequest) setDataState(value);
+      }
     } catch (reason) {
       if (requestId.current === currentRequest && cached === undefined) setError(reason instanceof Error ? reason : new Error("Неизвестная ошибка API"));
     } finally {

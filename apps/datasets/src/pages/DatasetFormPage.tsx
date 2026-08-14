@@ -1,5 +1,5 @@
 import type { CreateDatasetDto, DatasetSourceType } from "@mlops/contracts";
-import { AppIcon, Button, Notice, SelectField, TextField } from "@mlops/ui";
+import { AppIcon, Button, invalidateCachedResources, Notice, SelectField, TextField } from "@mlops/ui";
 import { type ChangeEvent, type FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { datasetsApi } from "../api";
@@ -26,6 +26,7 @@ export function DatasetFormPage() {
     setSubmitting(true); setError("");
     try {
       const created = await datasetsApi.createDataset(form);
+      invalidateCachedResources("datasets:[]");
       navigate(`/datasets/${created.id}`, { state: { success: "Датасет успешно зарегистрирован" } });
     } catch { setError("Не удалось зарегистрировать датасет. Повторите попытку."); }
     finally { setSubmitting(false); }

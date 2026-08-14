@@ -1,5 +1,5 @@
 import type { CreateProjectDto, ProjectDto, ProjectOwnerDto, ProjectStatus } from "@mlops/contracts";
-import { AppIcon, Button, DelayedLoadingState, ErrorState, Notice, SelectField, TextField } from "@mlops/ui";
+import { AppIcon, Button, DelayedLoadingState, ErrorState, invalidateCachedResources, Notice, SelectField, TextField } from "@mlops/ui";
 import { type ChangeEvent, type FormEvent, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { isProjectNotFoundError, projectsApi } from "../api";
@@ -58,6 +58,7 @@ export function ProjectFormPage({ mode }: { mode: "create" | "edit" }) {
     setSubmitting(true);
     try {
       const savedProject = mode === "create" ? await projectsApi.createProject(values) : await projectsApi.updateProject(projectId, values);
+      invalidateCachedResources("projects:list", `projects:detail:${savedProject.id}`);
       setSaved(true);
       navigate(`/projects/${savedProject.id}`, { replace: true, state: { success: mode === "create" ? "Проект успешно создан." : "Изменения успешно сохранены." } });
     } catch (error) {

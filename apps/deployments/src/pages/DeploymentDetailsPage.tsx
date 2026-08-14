@@ -1,4 +1,4 @@
-import { AppIcon, Button, DelayedLoadingState, ErrorState, Notice, StatusBadge } from "@mlops/ui";
+import { AppIcon, Button, DelayedLoadingState, ErrorState, invalidateCachedResources, Notice, StatusBadge } from "@mlops/ui";
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { deploymentsApi, isDeploymentNotFound } from "../api";
@@ -11,6 +11,7 @@ export function DeploymentDetailsPage() {
   const { deploymentId = "" } = useParams();
   const [restarting, setRestarting] = useState(false);
   const [success, setSuccess] = useState("");
+  const [restartError, setRestartError] = useState("");
   const resource = useApiResource(async () => {
     const [deployment, metrics, events] = await Promise.all([deploymentsApi.getDeployment(deploymentId), deploymentsApi.getMetrics(deploymentId), deploymentsApi.getEvents(deploymentId)]);
     return { deployment, metrics, events };
@@ -22,8 +23,13 @@ export function DeploymentDetailsPage() {
   const { deployment, metrics, events } = resource.data;
 
   const restart = async () => {
-    setRestarting(true); setSuccess("");
-    try { await deploymentsApi.restartDeployment(deployment.id); setSuccess("Развёртывание успешно перезапущено"); resource.retry(); }
+    setRestarting(true); setSuccess(""); setRestartError("");
+    try {
+      await deploymentsApi.restartDeployment(deployment.id);
+      invalidateCachedResources("deployments:[]", `deployments:${JSON.stringify([deployment.id])}`);
+      setSuccess("Развёртывание успешно перезапущено");
+      resource.retry();
+    } catch { setRestartError("Не удалось перезапустить развёртывание. Повторите попытку."); }
     finally { setRestarting(false); }
   };
 
@@ -34,6 +40,7 @@ export function DeploymentDetailsPage() {
       <Button variant="secondary" onClick={restart} disabled={restarting}><AppIcon name="refresh" size={17} aria-hidden />{restarting ? "Перезапуск…" : "Рестарт"}</Button>
     </header>
     {success ? <Notice>{success}</Notice> : null}
+    {restartError ? <Notice tone="error">{restartError}</Notice> : null}
     <div className="deployment-detail-grid">
       <article className="deployment-metrics-card">
         <h2><AppIcon name="activity" size={26} aria-hidden />Метрики (Последние 24 часа)</h2>

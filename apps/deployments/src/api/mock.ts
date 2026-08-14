@@ -65,8 +65,8 @@ const events: Record<string, DeploymentEventDto[]> = {
     { id: "evt5", deploymentId: "dep1", title: "Рост HTTP 500 ошибок", type: "error_rate", severity: "critical", occurredAt: "2024-04-10", monitoringEventId: "evt5" }
   ],
   dep2: [],
-  dep3: [{ id: "evt6", deploymentId: "dep3", title: "Всплеск задержки инференса (p99)", type: "latency_spike", severity: "warning", occurredAt: "2024-04-14", monitoringEventId: "evt6" }],
-  dep4: [{ id: "evt7", deploymentId: "dep4", title: "Нетипичный рост трафика", type: "usage_anomaly", severity: "warning", occurredAt: "2024-04-12", monitoringEventId: "evt7" }]
+  dep3: [{ id: "evt6", deploymentId: "dep3", title: "Всплеск задержки инференса (p99)", type: "latency_spike", severity: "warning", occurredAt: "2024-04-14", monitoringEventId: "evt2" }],
+  dep4: [{ id: "evt7", deploymentId: "dep4", title: "Нетипичный рост трафика", type: "usage_anomaly", severity: "warning", occurredAt: "2024-04-12", monitoringEventId: "evt4" }]
 };
 
 const findDeployment = (id: string) => {
