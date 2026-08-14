@@ -7,9 +7,9 @@ export * from "./types";
 function createRealDashboardApi(baseUrl: string): DashboardApi {
   const client = createApiClient({ baseUrl });
   return {
-    getSummary: () => client.get<DashboardSummaryDto>("/dashboard/summary"),
-    getActivity: () => client.get<DashboardActivityDto>("/dashboard/activity"),
-    getIncidents: () => client.get<DashboardIncidentsDto>("/dashboard/incidents?status=open&limit=10")
+    getSummary: () => client.get<DashboardSummaryDto>("/api/v1/dashboard/summary"),
+    getActivity: () => client.get<DashboardActivityDto>("/api/v1/dashboard/activity"),
+    getIncidents: () => client.get<DashboardIncidentsDto>("/api/v1/dashboard/incidents?status=open&limit=10")
   };
 }
 

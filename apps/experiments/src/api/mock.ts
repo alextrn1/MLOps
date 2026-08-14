@@ -9,7 +9,7 @@ let experiments: ExperimentDto[] = [
   { id: "e3", name: "twotower_embeddings_128", status: "running", project: projects.p2, model: models.m2, modelVersionId: null, dataset: datasets.d2, startedAt: "2024-04-14T13:00:00", completedAt: null, durationSeconds: null, keyMetric: { key: "hit_rate_at_10", label: "HIT_RATE_AT_10", value: .245, formattedValue: "0.2450" } },
   { id: "e2", name: "xgb_bki_features_deep", status: "completed", project: projects.p1, model: models.m1, modelVersionId: "mv1", dataset: datasets.d1, startedAt: "2024-03-13T04:00:00", completedAt: "2024-03-13T09:30:00", durationSeconds: 19800, keyMetric: { key: "roc_auc", label: "ROC_AUC", value: .908, formattedValue: "0.9080" } },
   { id: "e1", name: "xgb_bki_features_tuning", status: "completed", project: projects.p1, model: models.m1, modelVersionId: "mv2", dataset: datasets.d1, startedAt: "2024-03-12T23:00:00", completedAt: "2024-03-13T02:45:00", durationSeconds: 13500, keyMetric: { key: "roc_auc", label: "ROC_AUC", value: .912, formattedValue: "0.9120" } },
-  { id: "e4", name: "churn_rf_baseline", status: "failed", project: projects.p4, model: null, modelVersionId: null, dataset: datasets.d1, startedAt: "2024-02-21T12:00:00", completedAt: "2024-02-21T12:15:00", durationSeconds: 900, keyMetric: null }
+  { id: "e4", name: "churn_rf_baseline", status: "failed", project: projects.p1, model: null, modelVersionId: null, dataset: datasets.d1, startedAt: "2024-02-21T12:00:00", completedAt: "2024-02-21T12:15:00", durationSeconds: 900, keyMetric: null }
 ];
 
 const metrics: Record<string, ExperimentMetricDto[]> = {
