@@ -315,9 +315,6 @@ importers:
       '@mlops/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
-      '@mlops/platform-sdk':
-        specifier: workspace:*
-        version: link:../../packages/platform-sdk
       '@mlops/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -353,8 +350,6 @@ importers:
   packages/api-client: {}
 
   packages/contracts: {}
-
-  packages/platform-sdk: {}
 
   packages/ui:
     dependencies:

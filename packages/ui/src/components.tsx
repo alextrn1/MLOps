@@ -35,12 +35,10 @@ import {
 } from "lucide-react";
 import type {
   ButtonHTMLAttributes,
-  FormEventHandler,
   HTMLAttributes,
   InputHTMLAttributes,
   ReactNode,
   SelectHTMLAttributes,
-  TableHTMLAttributes,
   TextareaHTMLAttributes
 } from "react";
 import { useDelayedLoading } from "./hooks";
@@ -95,40 +93,8 @@ export function AppIcon({ name, size = 18, strokeWidth = 1.8, className, ...prop
   return <Icon size={size} strokeWidth={strokeWidth} className={className} {...props} />;
 }
 
-export function AppShell({ sidebar, header, children, className = "" }: { sidebar: ReactNode; header: ReactNode; children: ReactNode; className?: string }) {
-  return <div className={`ui-app-shell ${className}`.trim()}>{sidebar}<div className="ui-app-shell__content">{header}<main className="ui-app-shell__route">{children}</main></div></div>;
-}
-
-export function Sidebar({ brand, label, footer, children, className = "" }: { brand: ReactNode; label?: ReactNode; footer?: ReactNode; children: ReactNode; className?: string }) {
-  return <aside className={`ui-sidebar ${className}`.trim()}><div className="ui-sidebar__brand">{brand}</div><div className="ui-sidebar__body">{label ? <div className="ui-sidebar__label">{label}</div> : null}{children}</div>{footer}</aside>;
-}
-
-export function Header({ children, actions, className = "" }: { children: ReactNode; actions?: ReactNode; className?: string }) {
-  return <header className={`ui-header ${className}`.trim()}>{children}{actions}</header>;
-}
-
-export function Search({ className = "", inputClassName = "", onSubmit, ...props }: Omit<InputHTMLAttributes<HTMLInputElement>, "onSubmit"> & { inputClassName?: string; onSubmit?: FormEventHandler<HTMLFormElement> }) {
-  return <form className={`ui-search ${className}`.trim()} role="search" onSubmit={onSubmit}><AppIcon name="search" size={18} aria-hidden /><input className={`ui-search__input ${inputClassName}`.trim()} {...props} /></form>;
-}
-
-export function SidebarItem({ icon, label, badge, active = false, className = "" }: { icon: ReactNode; label: ReactNode; badge?: ReactNode; active?: boolean; className?: string }) {
-  return <span className={`ui-sidebar-item ${active ? "ui-sidebar-item--active" : ""} ${className}`.trim()}>{icon}<span className="ui-sidebar-item__label">{label}</span>{badge ? <span className="ui-sidebar-item__badge">{badge}</span> : null}</span>;
-}
-
-export function UserProfile({ initials, name, role, className = "" }: { initials: ReactNode; name: ReactNode; role: ReactNode; className?: string }) {
-  return <div className={`ui-user-profile ${className}`.trim()}><span className="ui-user-profile__avatar">{initials}</span><div className="ui-user-profile__details"><strong>{name}</strong><span>{role}</span></div></div>;
-}
-
-export function PageHeader({ title, description, actions, className = "" }: { title: ReactNode; description?: ReactNode; actions?: ReactNode; className?: string }) {
-  return <header className={`ui-page-header ${className}`.trim()}><div><h1 className="ui-page-header__title">{title}</h1>{description ? <p className="ui-page-header__description">{description}</p> : null}</div>{actions ? <div className="ui-page-header__actions">{actions}</div> : null}</header>;
-}
-
 export function Card({ className = "", ...props }: HTMLAttributes<HTMLDivElement>) {
   return <div className={`ui-card ${className}`.trim()} {...props} />;
-}
-
-export function Table({ className = "", frameClassName = "", ...props }: TableHTMLAttributes<HTMLTableElement> & { frameClassName?: string }) {
-  return <div className={`ui-table-frame ${frameClassName}`.trim()}><table className={`ui-table ${className}`.trim()} {...props} /></div>;
 }
 
 export function StatusBadge({ children, tone = "primary" }: { children: ReactNode; tone?: "primary" | "info" | "danger" | "success" | "warning" | "neutral" }) {
@@ -137,22 +103,6 @@ export function StatusBadge({ children, tone = "primary" }: { children: ReactNod
 
 export function Button({ className = "", variant = "primary", ...props }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: "primary" | "secondary" | "ghost" }) {
   return <button className={`ui-button ui-button--${variant} ${className}`.trim()} {...props} />;
-}
-
-export function PrimaryButton(props: ButtonHTMLAttributes<HTMLButtonElement>) {
-  return <Button variant="primary" {...props} />;
-}
-
-export function SecondaryButton(props: ButtonHTMLAttributes<HTMLButtonElement>) {
-  return <Button variant="secondary" {...props} />;
-}
-
-export function Input({ className = "", ...props }: InputHTMLAttributes<HTMLInputElement>) {
-  return <input className={`ui-input ${className}`.trim()} {...props} />;
-}
-
-export function Select({ className = "", ...props }: SelectHTMLAttributes<HTMLSelectElement>) {
-  return <select className={`ui-select ${className}`.trim()} {...props} />;
 }
 
 type TextFieldProps =
