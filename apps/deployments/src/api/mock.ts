@@ -8,6 +8,7 @@ import type {
   UpdateDeploymentTrafficDto
 } from "@mlops/contracts";
 import { waitForMockDelay } from "@mlops/api-client";
+import { demoModelVersions, demoModels, demoProjects } from "@mlops/contracts";
 import type { DeploymentsApi } from "./index";
 
 export class MockDeploymentApiError extends Error {
@@ -18,10 +19,10 @@ const delay = () => waitForMockDelay(import.meta.env.VITE_MOCK_DELAY_MS);
 const clone = <T,>(value: T): T => structuredClone(value);
 
 let deployments: DeploymentDto[] = [
-  { id: "dep1", name: "scoring", status: "active", environment: "production", url: "https://api.internal/ml/v1/scoring", project: { id: "p1", name: "Кредитный Скоринг Retail" }, model: { id: "m1", name: "RetailScoring_XGB" }, modelVersionId: "v210", modelVersion: "v2.1.0", trafficPercent: 100, deployedAt: "2024-03-20", deployedBy: "CI/CD Pipeline" },
-  { id: "dep2", name: "scoring", status: "active", environment: "staging", url: "https://api.staging.internal/ml/v1/scoring", project: { id: "p1", name: "Кредитный Скоринг Retail" }, model: { id: "m1", name: "RetailScoring_XGB" }, modelVersionId: "v220rc", modelVersion: "v2.2.0-rc", trafficPercent: 100, deployedAt: "2024-04-11", deployedBy: "Анна Смирнова" },
-  { id: "dep3", name: "recsys", status: "active", environment: "production", url: "https://api.internal/ml/v1/recsys", project: { id: "p2", name: "Рекомендации товаров e-commerce" }, model: { id: "m2", name: "TwoTower_RecSys" }, modelVersionId: "v150", modelVersion: "v1.5.0", trafficPercent: 100, deployedAt: "2024-04-02", deployedBy: "CI/CD Pipeline" },
-  { id: "dep4", name: "ocr", status: "active", environment: "production", url: "https://api.internal/ml/v1/ocr", project: { id: "p3", name: "Распознавание документов" }, model: { id: "m3", name: "DocYOLO_Entities" }, modelVersionId: "v400", modelVersion: "v4.0.0", trafficPercent: 100, deployedAt: "2023-10-10", deployedBy: "CI/CD Pipeline" }
+  { id: "dep1", name: "scoring", status: "active", environment: "production", url: "https://api.internal/ml/v1/scoring", project: { id: "p1", name: "Кредитный Скоринг Retail" }, model: { id: "m1", name: "RetailScoring_XGB" }, modelVersionId: "mv2", modelVersion: "v2.1.0", trafficPercent: 100, deployedAt: "2024-03-20", deployedBy: "CI/CD Pipeline" },
+  { id: "dep2", name: "scoring", status: "active", environment: "staging", url: "https://api.staging.internal/ml/v1/scoring", project: { id: "p1", name: "Кредитный Скоринг Retail" }, model: { id: "m1", name: "RetailScoring_XGB" }, modelVersionId: "mv1", modelVersion: "v2.2.0-rc", trafficPercent: 100, deployedAt: "2024-04-11", deployedBy: "Анна Смирнова" },
+  { id: "dep3", name: "recsys", status: "active", environment: "production", url: "https://api.internal/ml/v1/recsys", project: { id: "p2", name: "Рекомендации товаров e-commerce" }, model: { id: "m2", name: "TwoTower_RecSys" }, modelVersionId: "mv4", modelVersion: "v1.5.0", trafficPercent: 100, deployedAt: "2024-04-02", deployedBy: "CI/CD Pipeline" },
+  { id: "dep4", name: "ocr", status: "active", environment: "production", url: "https://api.internal/ml/v1/ocr", project: { id: "p3", name: "Распознавание документов" }, model: { id: "m3", name: "DocYOLO_Entities" }, modelVersionId: "mv5", modelVersion: "v4.0.0", trafficPercent: 100, deployedAt: "2023-10-10", deployedBy: "CI/CD Pipeline" }
 ];
 
 const metricSeries: Record<string, { latencies: number[]; requests: number[] }> = {
@@ -79,8 +80,12 @@ export const mockDeploymentsApi: DeploymentsApi = {
   async listDeployments() { await delay(); return clone(deployments); },
   async createDeployment(input: CreateDeploymentDto) {
     await delay();
+    const project = demoProjects.find((item) => item.id === input.projectId);
+    const model = demoModels.find((item) => item.id === input.modelId && item.projectId === input.projectId);
+    const modelVersion = demoModelVersions.find((item) => item.id === input.modelVersionId && item.modelId === input.modelId);
+    if (!project || !model || !modelVersion) throw new MockDeploymentApiError(400, "Invalid deployment relationships");
     const id = `dep${deployments.length + 1}`;
-    const created: DeploymentDto = { id, name: input.name, status: "active", environment: input.environment, url: input.url, project: { id: input.projectId, name: input.projectId === "p2" ? "Рекомендации товаров e-commerce" : input.projectId === "p3" ? "Распознавание документов" : "Кредитный Скоринг Retail" }, model: { id: input.modelId, name: input.modelId === "m2" ? "TwoTower_RecSys" : input.modelId === "m3" ? "DocYOLO_Entities" : "RetailScoring_XGB" }, modelVersionId: input.modelVersionId, modelVersion: input.modelVersionId, trafficPercent: input.trafficPercent, deployedAt: new Date().toISOString().slice(0, 10), deployedBy: "Анна Смирнова" };
+    const created: DeploymentDto = { id, name: input.name, status: "active", environment: input.environment, url: input.url, project: { id: project.id, name: project.name }, model: { id: model.id, name: model.name }, modelVersionId: modelVersion.id, modelVersion: modelVersion.version, trafficPercent: input.trafficPercent, deployedAt: new Date().toISOString().slice(0, 10), deployedBy: "Анна Смирнова" };
     deployments = [...deployments, created]; events[id] = []; return clone(created);
   },
   async getDeployment(id) { await delay(); return clone(findDeployment(id)); },

@@ -309,6 +309,12 @@ importers:
 
   apps/shell:
     dependencies:
+      '@mlops/api-client':
+        specifier: workspace:*
+        version: link:../../packages/api-client
+      '@mlops/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
       '@mlops/platform-sdk':
         specifier: workspace:*
         version: link:../../packages/platform-sdk

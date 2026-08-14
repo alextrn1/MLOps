@@ -3,6 +3,7 @@ import { AppIcon, Button, invalidateCachedResources, Notice, SelectField, TextFi
 import { type ChangeEvent, type FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { datasetsApi } from "../api";
+import { datasetProjectOptions } from "../datasetFormOptions";
 
 const initial: CreateDatasetDto = { name: "", description: "", projectId: "", sourceType: "dwh", sourceLabel: "" };
 
@@ -39,7 +40,7 @@ export function DatasetFormPage() {
       <TextField label="Название" value={form.name} onChange={(event: ChangeEvent<HTMLInputElement>) => set("name", event.target.value)} error={errors.name} placeholder="Например, retail_credit_history_v3" />
       <TextField textarea label="Описание" value={form.description} onChange={(event: ChangeEvent<HTMLTextAreaElement>) => set("description", event.target.value)} error={errors.description} placeholder="Кратко опишите содержимое набора данных" rows={4} />
       <div className="form-grid">
-        <SelectField label="Проект" value={form.projectId} onChange={(event) => set("projectId", event.target.value)} error={errors.projectId}><option value="">Выберите проект</option><option value="p1">Кредитный Скоринг Retail</option><option value="p2">Рекомендации товаров e-commerce</option><option value="p3">Распознавание документов</option></SelectField>
+        <SelectField label="Проект" value={form.projectId} onChange={(event) => set("projectId", event.target.value)} error={errors.projectId}><option value="">Выберите проект</option>{datasetProjectOptions.map((project) => <option key={project.value} value={project.value}>{project.label}</option>)}</SelectField>
         <SelectField label="Тип источника" value={form.sourceType} onChange={(event) => set("sourceType", event.target.value as DatasetSourceType)}><option value="dwh">DWH</option><option value="clickhouse">ClickHouse</option><option value="s3">S3</option></SelectField>
       </div>
       <TextField label="Источник" value={form.sourceLabel} onChange={(event: ChangeEvent<HTMLInputElement>) => set("sourceLabel", event.target.value)} error={errors.sourceLabel} placeholder="Например, DWH (Hadoop)" />

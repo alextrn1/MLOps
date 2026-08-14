@@ -10,12 +10,9 @@ import type {
   UpdateModelVersionStageDto
 } from "@mlops/contracts";
 import { waitForMockDelay } from "@mlops/api-client";
+import { demoProjects } from "@mlops/contracts";
 
-const projects: ModelProjectDto[] = [
-  { id: "p1", name: "Кредитный Скоринг Retail" },
-  { id: "p2", name: "Рекомендации товаров e-commerce" },
-  { id: "p3", name: "Распознавание документов" }
-];
+const projects: ModelProjectDto[] = demoProjects.map((project) => ({ ...project }));
 
 let models: ModelDto[] = [
   { id: "m1", name: "RetailScoring_XGB", description: "Градиентный бустинг для оценки вероятности дефолта", project: projects[0], taskType: "classification", framework: "xgboost", versionsCount: 3, createdAt: "2024-01-10", updatedAt: "2024-04-10" },

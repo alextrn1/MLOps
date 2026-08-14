@@ -1,4 +1,4 @@
-import type { CreateDatasetDto, CreateDatasetVersionDto, DatasetDto, DatasetLineageDto, DatasetProfileDto, DatasetSchemaFieldDto, DatasetVersionDto, UpdateDatasetDto } from "@mlops/contracts";
+import { demoProjects, type CreateDatasetDto, type CreateDatasetVersionDto, type DatasetDto, type DatasetLineageDto, type DatasetProfileDto, type DatasetProjectDto, type DatasetSchemaFieldDto, type DatasetVersionDto, type UpdateDatasetDto } from "@mlops/contracts";
 import { waitForMockDelay } from "@mlops/api-client";
 import type { DatasetsApi } from ".";
 
@@ -6,11 +6,7 @@ export class MockDatasetApiError extends Error {}
 const wait = () => waitForMockDelay(import.meta.env.VITE_MOCK_DELAY_MS);
 const clone = <T,>(value: T): T => structuredClone(value);
 
-const projects = {
-  p1: { id: "p1", name: "Кредитный Скоринг Retail" },
-  p2: { id: "p2", name: "Рекомендации товаров e-commerce" },
-  p3: { id: "p3", name: "Распознавание документов" }
-};
+const projects = Object.fromEntries(demoProjects.map((project) => [project.id, { ...project }])) as Record<string, DatasetProjectDto>;
 
 let datasets: DatasetDto[] = [
   { id: "d1", name: "retail_credit_history_v2", description: "Исторические данные по кредитам с обогащением из БКИ", project: projects.p1, sourceType: "dwh", sourceLabel: "DWH (Hadoop)", sizeMb: 4500, rowsCount: 15400000, rowsLabel: "15.4M", latestVersion: "2.1.0", createdAt: "2024-03-01", updatedAt: "2024-03-01" },
@@ -39,9 +35,9 @@ function findVersion(id: string, versionId: string) { findDataset(id); const val
 
 export const mockDatasetsApi: DatasetsApi = {
   async listDatasets() { await wait(); return clone(datasets); },
-  async createDataset(input: CreateDatasetDto) { await wait(); const now = new Date().toISOString().slice(0, 10); const created: DatasetDto = { id: `d${Date.now()}`, ...input, project: projects[input.projectId as keyof typeof projects] ?? projects.p1, sizeMb: 0, rowsCount: 0, rowsLabel: "0", latestVersion: "—", createdAt: now, updatedAt: now }; datasets = [created, ...datasets]; return clone(created); },
+  async createDataset(input: CreateDatasetDto) { await wait(); const now = new Date().toISOString().slice(0, 10); const created: DatasetDto = { id: `d${Date.now()}`, ...input, project: projects[input.projectId] ?? projects.p1, sizeMb: 0, rowsCount: 0, rowsLabel: "0", latestVersion: "—", createdAt: now, updatedAt: now }; datasets = [created, ...datasets]; return clone(created); },
   async getDataset(id) { await wait(); return clone(findDataset(id)); },
-  async updateDataset(id, input: UpdateDatasetDto) { await wait(); const current = findDataset(id); const updated = { ...current, ...input, project: input.projectId ? projects[input.projectId as keyof typeof projects] ?? current.project : current.project, updatedAt: new Date().toISOString().slice(0, 10) }; datasets = datasets.map((item) => item.id === id ? updated : item); return clone(updated); },
+  async updateDataset(id, input: UpdateDatasetDto) { await wait(); const current = findDataset(id); const updated = { ...current, ...input, project: input.projectId ? projects[input.projectId] ?? current.project : current.project, updatedAt: new Date().toISOString().slice(0, 10) }; datasets = datasets.map((item) => item.id === id ? updated : item); return clone(updated); },
   async listVersions(id) { await wait(); findDataset(id); return clone(versions.filter((item) => item.datasetId === id)); },
   async createVersion(id, input: CreateDatasetVersionDto) { await wait(); const dataset = findDataset(id); const created: DatasetVersionDto = { id: `v${Date.now()}`, datasetId: id, ...input, sizeMb: dataset.sizeMb, rowsCount: dataset.rowsCount, rowsLabel: dataset.rowsLabel, author: "Анна Смирнова", createdAt: new Date().toISOString().slice(0, 10) }; versions = [created, ...versions]; datasets = datasets.map((item) => item.id === id ? { ...item, latestVersion: input.version } : item); return clone(created); },
   async getVersion(id, versionId) { await wait(); return clone(findVersion(id, versionId)); },

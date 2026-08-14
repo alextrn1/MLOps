@@ -1,19 +1,9 @@
-import type { CreateExperimentDto, ExperimentArtifactDto, ExperimentDto, ExperimentLogLineDto, ExperimentMetricDto, ExperimentParameterDto } from "@mlops/contracts";
+import { demoDatasets, demoModels, demoProjects, type CreateExperimentDto, type ExperimentArtifactDto, type ExperimentDatasetRefDto, type ExperimentDto, type ExperimentEntityRefDto, type ExperimentLogLineDto, type ExperimentMetricDto, type ExperimentParameterDto } from "@mlops/contracts";
 import { waitForMockDelay } from "@mlops/api-client";
 
-const projects = {
-  p1: { id: "p1", name: "Кредитный Скоринг Retail" },
-  p2: { id: "p2", name: "Рекомендации товаров e-commerce" },
-  p4: { id: "p4", name: "Прогнозирование оттока B2B" }
-};
-const models = {
-  m1: { id: "m1", name: "RetailScoring_XGB" },
-  m2: { id: "m2", name: "TwoTower_RecSys" }
-};
-const datasets = {
-  d1: { id: "d1", name: "retail_credit_history_v2", version: "2.1.0" },
-  d2: { id: "d2", name: "user_interactions_q1", version: "1.0.0" }
-};
+const projects = Object.fromEntries(demoProjects.map((project) => [project.id, { id: project.id, name: project.name }])) as Record<string, ExperimentEntityRefDto>;
+const models = Object.fromEntries(demoModels.map((model) => [model.id, { id: model.id, name: model.name }])) as Record<string, ExperimentEntityRefDto>;
+const datasets = Object.fromEntries(demoDatasets.map((dataset) => [dataset.id, { id: dataset.id, name: dataset.name, version: dataset.latestVersion }])) as Record<string, ExperimentDatasetRefDto>;
 
 let experiments: ExperimentDto[] = [
   { id: "e3", name: "twotower_embeddings_128", status: "running", project: projects.p2, model: models.m2, modelVersionId: null, dataset: datasets.d2, startedAt: "2024-04-14T13:00:00", completedAt: null, durationSeconds: null, keyMetric: { key: "hit_rate_at_10", label: "HIT_RATE_AT_10", value: .245, formattedValue: "0.2450" } },
@@ -53,7 +43,7 @@ function find(id: string) { const item = experiments.find((experiment) => experi
 
 export const mockExperimentsApi = {
   async listExperiments() { await wait(); return clone(experiments); },
-  async createExperiment(input: CreateExperimentDto) { await wait(); const id = `e${experiments.length + 1}`; const experiment: ExperimentDto = { id, name: input.name.trim(), status: "running", project: projects[input.projectId as keyof typeof projects] ?? projects.p1, model: models[input.modelId as keyof typeof models] ?? models.m1, modelVersionId: null, dataset: datasets[input.datasetId as keyof typeof datasets] ?? datasets.d1, startedAt: new Date().toISOString().slice(0, 19), completedAt: null, durationSeconds: null, keyMetric: null }; experiments = [experiment, ...experiments]; metrics[id] = []; parameters[id] = []; artifacts[id] = []; logs[id] = [{ id: `${id}-log`, timestamp: experiment.startedAt, level: "info", message: "Training job queued" }]; return clone(experiment); },
+  async createExperiment(input: CreateExperimentDto) { await wait(); const id = `e${experiments.length + 1}`; const experiment: ExperimentDto = { id, name: input.name.trim(), status: "running", project: projects[input.projectId] ?? projects.p1, model: models[input.modelId] ?? models.m1, modelVersionId: null, dataset: datasets[input.datasetId] ?? datasets.d1, startedAt: new Date().toISOString().slice(0, 19), completedAt: null, durationSeconds: null, keyMetric: null }; experiments = [experiment, ...experiments]; metrics[id] = []; parameters[id] = []; artifacts[id] = []; logs[id] = [{ id: `${id}-log`, timestamp: experiment.startedAt, level: "info", message: "Training job queued" }]; return clone(experiment); },
   async getExperiment(id: string) { await wait(); return clone(find(id)); },
   async cancelExperiment(id: string) { await wait(); const current = find(id); if (current.status !== "running" && current.status !== "queued" && current.status !== "pending") return clone(current); const updated = { ...current, status: "cancelled" as const, completedAt: new Date().toISOString().slice(0, 19) }; experiments = experiments.map((item) => item.id === id ? updated : item); return clone(updated); },
   async retryExperiment(id: string) { await wait(); const current = find(id); const retried: ExperimentDto = { ...current, id: `e${experiments.length + 1}`, name: `${current.name}_retry`, status: "running", startedAt: new Date().toISOString().slice(0, 19), completedAt: null, durationSeconds: null, keyMetric: null, modelVersionId: null }; experiments = [retried, ...experiments]; metrics[retried.id] = []; parameters[retried.id] = clone(parameters[id] ?? []); artifacts[retried.id] = []; logs[retried.id] = [{ id: `${retried.id}-log`, timestamp: retried.startedAt, level: "info", message: "Retry started" }]; return clone(retried); },

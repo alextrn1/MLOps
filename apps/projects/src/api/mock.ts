@@ -10,13 +10,9 @@ import type {
   UpdateProjectMembersDto
 } from "@mlops/contracts";
 import { waitForMockDelay } from "@mlops/api-client";
+import { demoUsers } from "@mlops/contracts";
 
-const owners: ProjectOwnerDto[] = [
-  { id: "u1", name: "Анна Смирнова", title: "Lead DS" },
-  { id: "u2", name: "Иван Петров", title: "DS" },
-  { id: "u3", name: "Сергей Иванов", title: "Lead DS" },
-  { id: "u4", name: "Елена Соколова", title: "DS" }
-];
+const owners: ProjectOwnerDto[] = demoUsers.map((owner) => ({ ...owner }));
 
 let projects: ProjectDto[] = [
   { id: "p1", name: "Кредитный Скоринг Retail", description: "Оценка вероятности дефолта физических лиц по потребительским кредитам", owner: owners[0], status: "active", createdAt: "2023-11-10", updatedAt: "2024-04-11" },

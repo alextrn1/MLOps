@@ -17,6 +17,29 @@ export interface ApiErrorDto {
   message: string;
 }
 
+export type GlobalSearchEntityType = "project" | "model" | "dataset" | "deployment" | "incident";
+
+export interface GlobalSearchResultDto {
+  type: GlobalSearchEntityType;
+  id: string;
+  title: string;
+  route: string;
+}
+
+export interface CurrentUserDto {
+  id: string;
+  name: string;
+  role: string;
+  avatarUrl: string | null;
+}
+
+export interface UserSettingsDto {
+  theme: "system" | "light" | "dark";
+  locale: "ru-RU" | "en-US";
+}
+
+export type UpdateUserSettingsDto = Partial<UserSettingsDto>;
+
 export type ProjectStatus = "active" | "completed" | "paused";
 export type ProjectMemberRole = "owner" | "lead" | "member";
 
@@ -356,6 +379,8 @@ export interface DeploymentEventDto {
   monitoringEventId: string | null;
 }
 
+export * from "./demoCatalogue";
+
 export type IncidentStatus = "open" | "acknowledged" | "resolved";
 export type IncidentSeverity = "critical" | "warning";
 export type IncidentType = "latency_spike" | "data_drift" | "model_degradation" | "usage_anomaly" | "error_rate";
@@ -363,6 +388,7 @@ export type IncidentType = "latency_spike" | "data_drift" | "model_degradation" 
 export interface IncidentEntityRefDto { id: string; name: string; }
 export interface IncidentDeploymentRefDto extends IncidentEntityRefDto { url: string; environment: "production" | "staging"; }
 export interface IncidentMetricDto { label: string; value: number; formattedValue: string; threshold: number; formattedThreshold: string; tone: "danger" | "warning"; }
+export interface IncidentExternalIntegrationsDto { grafanaUrl: string | null; logsUrl: string | null; }
 
 export interface IncidentDto {
   id: string;
@@ -375,6 +401,7 @@ export interface IncidentDto {
   deployment: IncidentDeploymentRefDto;
   project: IncidentEntityRefDto;
   metric: IncidentMetricDto;
+  integrations: IncidentExternalIntegrationsDto;
   detectedAt: string;
   resolvedAt: string | null;
   resolvedBy: string | null;

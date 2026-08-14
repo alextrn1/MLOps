@@ -9,6 +9,8 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
+    "@mlops/api-client": "workspace:*",
+    "@mlops/contracts": "workspace:*",
     "@mlops/platform-sdk": "workspace:*",
     "@mlops/ui": "workspace:*",
     "react": "19.2.8",

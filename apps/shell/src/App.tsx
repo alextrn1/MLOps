@@ -1,8 +1,9 @@
+import type { CurrentUserDto, GlobalSearchEntityType, GlobalSearchResultDto, UserSettingsDto } from "@mlops/contracts";
 import { AppIcon, type AppIconName } from "@mlops/ui";
 import { lazy, useEffect, useRef, useState, type ComponentType, type FormEvent, type KeyboardEvent as ReactKeyboardEvent } from "react";
-import { NavLink, Navigate, Route, Routes } from "react-router-dom";
+import { NavLink, Navigate, Route, Routes, useNavigate } from "react-router-dom";
+import { shellApi } from "./api";
 import { RemoteBoundary } from "./RemoteBoundary";
-import { currentUser, type ShellUser } from "./user";
 
 function memoizeImport<T>(load: () => Promise<T>): () => Promise<T> {
   let pending: Promise<T> | undefined;
@@ -31,7 +32,6 @@ interface NavigationItem {
   label: string;
   icon: AppIconName;
   end?: boolean;
-  badge?: string;
   preload: () => Promise<unknown>;
 }
 
@@ -42,7 +42,7 @@ const navigation: readonly NavigationItem[] = [
   { to: "/experiments", label: "Эксперименты", icon: "activity", preload: loadExperiments },
   { to: "/datasets", label: "Датасеты", icon: "database", preload: loadDatasets },
   { to: "/deployments", label: "Развёртывания", icon: "server", preload: loadDeployments },
-  { to: "/monitoring", label: "Мониторинг", icon: "bell", badge: "2", preload: loadMonitoring }
+  { to: "/monitoring", label: "Мониторинг", icon: "bell", preload: loadMonitoring }
 ];
 
 function Remote({ name, component: RemoteComponent }: { name: string; component: ComponentType }) {
@@ -63,20 +63,24 @@ function NavigationLinks({ onNavigate }: { onNavigate?: () => void }) {
     >
       <AppIcon name={item.icon} size={18} aria-hidden />
       <span className="nav-link__label">{item.label}</span>
-      {item.badge ? <span className="nav-link__badge">{item.badge}</span> : null}
     </NavLink>
   ));
 }
 
-function UserIdentity({ user }: { user: ShellUser }) {
-  return <><span className="profile__avatar">{user.avatar ? <img src={user.avatar} alt="" /> : user.initials}</span><div className="profile__details"><strong>{user.name}</strong><span>{user.role}</span></div></>;
+function getInitials(name: string): string {
+  return name.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toLocaleUpperCase("ru-RU");
 }
 
-function UserBlock({ user }: { user: ShellUser }) {
-  return <div className="mobile-drawer__user"><button className="mobile-drawer__user-button" type="button" aria-label={`Профиль пользователя: ${user.name}`}><UserIdentity user={user} /></button></div>;
+function UserIdentity({ user }: { user: CurrentUserDto | null }) {
+  const name = user?.name ?? "Пользователь";
+  return <><span className="profile__avatar">{user?.avatarUrl ? <img src={user.avatarUrl} alt="" /> : getInitials(name)}</span><div className="profile__details"><strong>{name}</strong><span>{user?.role ?? "Загрузка…"}</span></div></>;
 }
 
-function Sidebar() {
+function UserBlock({ user }: { user: CurrentUserDto | null }) {
+  return <div className="mobile-drawer__user"><div className="profile-surface"><UserIdentity user={user} /></div></div>;
+}
+
+function Sidebar({ user }: { user: CurrentUserDto | null }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -130,7 +134,9 @@ function Sidebar() {
         </nav>
       </div>
       <div className="profile">
-        <UserIdentity user={currentUser} />
+        <div className="profile-surface">
+          <UserIdentity user={user} />
+        </div>
       </div>
       <button className={`mobile-drawer-overlay${drawerOpen ? " mobile-drawer-overlay--open" : ""}`} type="button" aria-label="Закрыть меню" tabIndex={drawerOpen ? 0 : -1} onClick={closeDrawer} />
       <div ref={drawerRef} id="mobile-navigation-drawer" className={`mobile-drawer${drawerOpen ? " mobile-drawer--open" : ""}`} role="dialog" aria-modal="true" aria-label="Навигация MLOps Studio" aria-hidden={!drawerOpen} onKeyDown={keepFocusInside}>
@@ -142,29 +148,80 @@ function Sidebar() {
           <div className="mobile-drawer__label">Платформа</div>
           <nav className="mobile-drawer__nav" aria-label="Мобильная навигация"><NavigationLinks onNavigate={closeDrawer} /></nav>
         </div>
-        <UserBlock user={currentUser} />
+        <UserBlock user={user} />
       </div>
     </aside>
   );
 }
 
 function Topbar() {
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => event.preventDefault();
+  const navigate = useNavigate();
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<GlobalSearchResultDto[]>([]);
+  const [searching, setSearching] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [settings, setSettings] = useState<UserSettingsDto | null>(null);
+  const [settingsLoading, setSettingsLoading] = useState(false);
+  const [settingsError, setSettingsError] = useState("");
+
+  useEffect(() => {
+    const normalized = query.trim();
+    if (normalized.length < 2) { setResults([]); setSearching(false); return; }
+    let active = true;
+    setSearching(true);
+    const timeout = window.setTimeout(() => {
+      shellApi.search(normalized).then((items) => {
+        if (!active) return;
+        setResults(items);
+        setSearchOpen(true);
+      }).catch(() => {
+        if (active) setResults([]);
+      }).finally(() => {
+        if (active) setSearching(false);
+      });
+    }, 150);
+    return () => { active = false; window.clearTimeout(timeout); };
+  }, [query]);
+
+  useEffect(() => {
+    if (!settingsOpen || settings || settingsLoading) return;
+    setSettingsLoading(true); setSettingsError("");
+    shellApi.getSettings().then(setSettings).catch(() => setSettingsError("Не удалось загрузить настройки.")).finally(() => setSettingsLoading(false));
+  }, [settingsOpen]);
+
+  const openResult = (result: GlobalSearchResultDto) => {
+    navigate(result.route);
+    setQuery(""); setResults([]); setSearchOpen(false);
+  };
+  const submitSearch = (event: FormEvent<HTMLFormElement>) => { event.preventDefault(); if (results[0]) openResult(results[0]); };
+  const entityLabels: Record<GlobalSearchEntityType, string> = { project: "Проект", model: "Модель", dataset: "Датасет", deployment: "Deployment", incident: "Инцидент" };
+  const themeLabels: Record<UserSettingsDto["theme"], string> = { system: "Как в системе", light: "Светлая", dark: "Тёмная" };
 
   return (
     <header className="topbar">
-      <form className="global-search" role="search" onSubmit={handleSubmit}>
+      <form className="global-search" role="search" onSubmit={submitSearch}>
         <AppIcon name="search" size={18} aria-hidden />
-        <input aria-label="Глобальный поиск" placeholder="Поиск по проектам, моделям, ID..." />
+        <input value={query} onChange={(event) => setQuery(event.target.value)} onFocus={() => { if (query.trim().length >= 2) setSearchOpen(true); }} onKeyDown={(event) => { if (event.key === "Escape") setSearchOpen(false); }} aria-label="Глобальный поиск" placeholder="Поиск по проектам, моделям, ID..." autoComplete="off" />
+        {searchOpen && query.trim().length >= 2 ? <div className="global-search__results">{searching ? <span className="global-search__state">Поиск…</span> : results.length ? results.map((result) => <button key={`${result.type}-${result.id}`} type="button" onClick={() => openResult(result)}><span>{result.title}</span><small>{entityLabels[result.type]} · {result.id}</small></button>) : <span className="global-search__state">Ничего не найдено</span>}</div> : null}
       </form>
-      <button className="settings-button" type="button" aria-label="Настройки">
-        <AppIcon name="settings" size={20} aria-hidden />
-      </button>
+      <div className="settings-control">
+        <button className="settings-button" type="button" aria-label="Настройки" aria-expanded={settingsOpen} onClick={() => setSettingsOpen((value) => !value)}><AppIcon name="settings" size={20} aria-hidden /></button>
+        {settingsOpen ? <div className="settings-panel"><strong>Настройки платформы</strong>{settingsLoading ? <span>Загрузка…</span> : settingsError ? <span>{settingsError}</span> : settings ? <><dl><div><dt>Тема</dt><dd>{themeLabels[settings.theme]}</dd></div><div><dt>Язык</dt><dd>{settings.locale}</dd></div></dl><small>Расширенные настройки будут доступны после подключения backend.</small></> : null}</div> : null}
+      </div>
     </header>
   );
 }
 
 export default function App() {
+  const [currentUser, setCurrentUser] = useState<CurrentUserDto | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    shellApi.getCurrentUser().then((user) => { if (active) setCurrentUser(user); }).catch(() => undefined);
+    return () => { active = false; };
+  }, []);
+
   useEffect(() => {
     const idleWindow = window as Window & {
       requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number;
@@ -180,7 +237,7 @@ export default function App() {
 
   return (
     <div className="shell">
-      <Sidebar />
+      <Sidebar user={currentUser} />
       <main className="content">
         <Topbar />
         <div className="route-content">

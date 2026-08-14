@@ -1,9 +1,10 @@
-import type { CreateProjectDto, ProjectDto, ProjectOwnerDto, ProjectStatus } from "@mlops/contracts";
+import type { CreateProjectDto, ProjectStatus } from "@mlops/contracts";
 import { AppIcon, Button, DelayedLoadingState, ErrorState, invalidateCachedResources, Notice, SelectField, TextField } from "@mlops/ui";
-import { type ChangeEvent, type FormEvent, useEffect, useMemo, useState } from "react";
+import { type ChangeEvent, type FormEvent, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { isProjectNotFoundError, projectsApi } from "../api";
 import { projectStatusOptions } from "../projectViewModel";
+import { projectOwnerOptions } from "../projectFormOptions";
 import { ProjectNotFoundPage } from "./ProjectNotFoundPage";
 
 type FormErrors = Partial<Record<keyof CreateProjectDto, string>>;
@@ -23,7 +24,6 @@ export function ProjectFormPage({ mode }: { mode: "create" | "edit" }) {
   const { projectId = "" } = useParams();
   const navigate = useNavigate();
   const [values, setValues] = useState<CreateProjectDto>(emptyForm);
-  const [owners, setOwners] = useState<ProjectOwnerDto[]>([]);
   const [errors, setErrors] = useState<FormErrors>({});
   const [state, setState] = useState<"loading" | "ready" | "error" | "not-found">("loading");
   const [submitting, setSubmitting] = useState(false);
@@ -33,12 +33,10 @@ export function ProjectFormPage({ mode }: { mode: "create" | "edit" }) {
 
   useEffect(() => {
     let active = true; setState("loading");
-    const request = mode === "edit" ? Promise.all([projectsApi.listProjects(), projectsApi.getProject(projectId)]) : Promise.all([projectsApi.listProjects(), Promise.resolve<ProjectDto | null>(null)]);
-    request.then(([projectList, project]) => {
+    const request = mode === "edit" ? projectsApi.getProject(projectId) : Promise.resolve(null);
+    request.then((project) => {
       if (!active) return;
-      const uniqueOwners = Array.from(new Map(projectList.map((item) => [item.owner.id, item.owner])).values());
-      setOwners(uniqueOwners);
-      setValues(project ? { name: project.name, description: project.description, ownerId: project.owner.id, status: project.status } : { ...emptyForm, ownerId: uniqueOwners[0]?.id ?? "" });
+      setValues(project ? { name: project.name, description: project.description, ownerId: project.owner.id, status: project.status } : { ...emptyForm, ownerId: projectOwnerOptions[0]?.value ?? "" });
       setState("ready");
     }).catch((error) => { if (active) setState(isProjectNotFoundError(error) ? "not-found" : "error"); });
     return () => { active = false; };
@@ -47,7 +45,6 @@ export function ProjectFormPage({ mode }: { mode: "create" | "edit" }) {
   const title = mode === "create" ? "Новый проект" : "Редактирование проекта";
   const subtitle = mode === "create" ? "Создайте пространство для ML-инициативы и её ресурсов" : "Измените основные параметры проекта";
   const cancelUrl = mode === "create" ? "/projects" : `/projects/${projectId}`;
-  const ownerOptions = useMemo(() => owners.map((owner) => ({ value: owner.id, label: `${owner.name} (${owner.title})` })), [owners]);
 
   const update = <K extends keyof CreateProjectDto>(key: K, value: CreateProjectDto[K]) => { setValues((current) => ({ ...current, [key]: value })); setErrors((current) => ({ ...current, [key]: undefined })); };
 
@@ -80,7 +77,7 @@ export function ProjectFormPage({ mode }: { mode: "create" | "edit" }) {
         <TextField label="Название проекта" value={values.name} onChange={(event: ChangeEvent<HTMLInputElement>) => update("name", event.currentTarget.value)} placeholder="Например, Кредитный Скоринг Retail" error={errors.name} disabled={submitting} />
         <TextField label="Описание" textarea value={values.description} onChange={(event: ChangeEvent<HTMLTextAreaElement>) => update("description", event.currentTarget.value)} placeholder="Кратко опишите цель проекта" error={errors.description} disabled={submitting} />
         <div className="project-form-row">
-          <SelectField label="Владелец" value={values.ownerId} onChange={(event) => update("ownerId", event.currentTarget.value)} error={errors.ownerId} disabled={submitting}>{ownerOptions.map((owner) => <option key={owner.value} value={owner.value}>{owner.label}</option>)}</SelectField>
+          <SelectField label="Владелец" value={values.ownerId} onChange={(event) => update("ownerId", event.currentTarget.value)} error={errors.ownerId} disabled={submitting}>{projectOwnerOptions.map((owner) => <option key={owner.value} value={owner.value}>{owner.label}</option>)}</SelectField>
           <SelectField label="Статус" value={values.status} onChange={(event) => update("status", event.currentTarget.value as ProjectStatus)} error={errors.status} disabled={submitting}>{projectStatusOptions.map((status) => <option key={status.value} value={status.value}>{status.label}</option>)}</SelectField>
         </div>
       </div>
