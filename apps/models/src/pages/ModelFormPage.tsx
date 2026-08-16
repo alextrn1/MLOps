@@ -2,31 +2,40 @@ import type { CreateModelDto, ModelFramework, ModelTaskType } from "@mlops/contr
 import {
   AppIcon,
   Button,
+  DelayedLoadingState,
+  ErrorState,
   invalidateCachedResources,
   Notice,
   SelectField,
   TextField
 } from "@mlops/ui";
-import { type ChangeEvent, type FormEvent, useState } from "react";
+import { type ChangeEvent, type FormEvent, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { modelsApi } from "../api";
-import { modelProjectOptions } from "../modelFormOptions";
+import { useModelFormOptions } from "../modelFormOptions";
 import { frameworkOptions, taskOptions } from "../modelViewModel";
 
 const initialFormValues: CreateModelDto = {
   name: "",
   description: "",
-  projectId: modelProjectOptions[0]?.value ?? "",
+  projectId: "",
   taskType: "classification",
   framework: "xgboost"
 };
 
 export function ModelFormPage() {
   const navigate = useNavigate();
+  const { projectOptions, loading: optionsLoading, error: optionsError, retry: retryOptions } = useModelFormOptions();
   const [values, setValues] = useState(initialFormValues);
   const [errors, setErrors] = useState<Partial<Record<keyof CreateModelDto, string>>>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
+
+  useEffect(() => {
+    if (!values.projectId && projectOptions[0]) {
+      setValues((current) => ({ ...current, projectId: projectOptions[0].value }));
+    }
+  }, [projectOptions, values.projectId]);
 
   const updateField = <K extends keyof CreateModelDto>(key: K, value: CreateModelDto[K]) => {
     setValues((current) => ({ ...current, [key]: value }));
@@ -60,6 +69,9 @@ export function ModelFormPage() {
       setSubmitting(false);
     }
   };
+
+  if (optionsLoading) return <section className="models-page model-form-page"><DelayedLoadingState loading label="Загружаем проекты…" /></section>;
+  if (optionsError) return <section className="models-page model-form-page"><ErrorState title="Не удалось загрузить проекты" description="Проверьте подключение к API и попробуйте снова." onRetry={retryOptions} /></section>;
 
   return (
     <section className="models-page model-form-page">
@@ -100,7 +112,7 @@ export function ModelFormPage() {
             error={errors.projectId}
             disabled={submitting}
           >
-            {modelProjectOptions.map((project) => (
+            {projectOptions.map((project) => (
               <option key={project.value} value={project.value}>{project.label}</option>
             ))}
           </SelectField>

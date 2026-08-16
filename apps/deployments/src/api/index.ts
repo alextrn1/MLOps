@@ -10,6 +10,9 @@ import type {
 import { MockDeploymentApiError, mockDeploymentsApi } from "./mock";
 
 export interface DeploymentsApi {
+  listFormProjects(): Promise<ReadonlyArray<{ id: string; name: string }>>;
+  listFormModels(): Promise<ReadonlyArray<{ id: string; name: string; projectId: string }>>;
+  listFormModelVersions(modelId: string): Promise<ReadonlyArray<{ id: string; version: string }>>;
   listDeployments(): Promise<DeploymentDto[]>;
   createDeployment(input: CreateDeploymentDto): Promise<DeploymentDto>;
   getDeployment(deploymentId: string): Promise<DeploymentDto>;
@@ -25,6 +28,13 @@ const mode = import.meta.env.VITE_API_MODE ?? "mock";
 const http = createApiClient({ baseUrl: import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:4010" });
 
 const realDeploymentsApi: DeploymentsApi = {
+  listFormProjects: () => http.get<Array<{ id: string; name: string }>>("/api/v1/projects"),
+  listFormModels: async () => (await http.get<import("@mlops/contracts").ModelDto[]>("/api/v1/models")).map((model) => ({
+    id: model.id,
+    name: model.name,
+    projectId: model.project.id
+  })),
+  listFormModelVersions: (modelId) => http.get(`/api/v1/models/${modelId}/versions`),
   listDeployments: () => http.get("/api/v1/deployments"),
   createDeployment: (input) => http.post("/api/v1/deployments", input),
   getDeployment: (id) => http.get(`/api/v1/deployments/${id}`),

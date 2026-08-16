@@ -77,6 +77,9 @@ const findDeployment = (id: string) => {
 };
 
 export const mockDeploymentsApi: DeploymentsApi = {
+  async listFormProjects() { return clone(demoProjects); },
+  async listFormModels() { return clone(demoModels); },
+  async listFormModelVersions(modelId) { return clone(demoModelVersions.filter((version) => version.modelId === modelId)); },
   async listDeployments() { await delay(); return clone(deployments); },
   async createDeployment(input: CreateDeploymentDto) {
     await delay();

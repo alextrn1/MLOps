@@ -3,6 +3,7 @@ import type { CreateDatasetDto, CreateDatasetVersionDto, DatasetDto, DatasetLine
 import { MockDatasetApiError, mockDatasetsApi } from "./mock";
 
 export interface DatasetsApi {
+  listFormProjects(): Promise<ReadonlyArray<{ id: string; name: string }>>;
   listDatasets(): Promise<DatasetDto[]>;
   createDataset(input: CreateDatasetDto): Promise<DatasetDto>;
   getDataset(datasetId: string): Promise<DatasetDto>;
@@ -18,6 +19,7 @@ export interface DatasetsApi {
 const mode = import.meta.env.VITE_API_MODE ?? "mock";
 const http = createApiClient({ baseUrl: import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:4010" });
 const realDatasetsApi: DatasetsApi = {
+  listFormProjects: () => http.get("/api/v1/projects"),
   listDatasets: () => http.get("/api/v1/datasets"),
   createDataset: (input) => http.post("/api/v1/datasets", input),
   getDataset: (id) => http.get(`/api/v1/datasets/${id}`),

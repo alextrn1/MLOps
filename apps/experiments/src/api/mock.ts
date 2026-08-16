@@ -1,5 +1,6 @@
 import { demoDatasets, demoModels, demoProjects, type CreateExperimentDto, type ExperimentArtifactDto, type ExperimentDatasetRefDto, type ExperimentDto, type ExperimentEntityRefDto, type ExperimentLogLineDto, type ExperimentMetricDto, type ExperimentParameterDto } from "@mlops/contracts";
 import { waitForMockDelay } from "@mlops/api-client";
+import type { ExperimentsApi } from ".";
 
 const projects = Object.fromEntries(demoProjects.map((project) => [project.id, { id: project.id, name: project.name }])) as Record<string, ExperimentEntityRefDto>;
 const models = Object.fromEntries(demoModels.map((model) => [model.id, { id: model.id, name: model.name }])) as Record<string, ExperimentEntityRefDto>;
@@ -41,7 +42,10 @@ const clone = <T,>(value: T): T => structuredClone(value);
 export class MockExperimentApiError extends Error { readonly status = 404; constructor() { super("experiment not found"); } }
 function find(id: string) { const item = experiments.find((experiment) => experiment.id === id); if (!item) throw new MockExperimentApiError(); return item; }
 
-export const mockExperimentsApi = {
+export const mockExperimentsApi: ExperimentsApi = {
+  async listFormProjects() { return clone(demoProjects); },
+  async listFormModels() { return clone(demoModels); },
+  async listFormDatasets() { return clone(demoDatasets); },
   async listExperiments() { await wait(); return clone(experiments); },
   async createExperiment(input: CreateExperimentDto) { await wait(); const id = `e${experiments.length + 1}`; const experiment: ExperimentDto = { id, name: input.name.trim(), status: "running", project: projects[input.projectId] ?? projects.p1, model: models[input.modelId] ?? models.m1, modelVersionId: null, dataset: datasets[input.datasetId] ?? datasets.d1, startedAt: new Date().toISOString().slice(0, 19), completedAt: null, durationSeconds: null, keyMetric: null }; experiments = [experiment, ...experiments]; metrics[id] = []; parameters[id] = []; artifacts[id] = []; logs[id] = [{ id: `${id}-log`, timestamp: experiment.startedAt, level: "info", message: "Training job queued" }]; return clone(experiment); },
   async getExperiment(id: string) { await wait(); return clone(find(id)); },

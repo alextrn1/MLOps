@@ -34,6 +34,7 @@ function findDataset(id: string) { const value = datasets.find((item) => item.id
 function findVersion(id: string, versionId: string) { findDataset(id); const value = versions.find((item) => item.datasetId === id && item.id === versionId); if (!value) throw new MockDatasetApiError("404 version not found"); return value; }
 
 export const mockDatasetsApi: DatasetsApi = {
+  async listFormProjects() { return clone(demoProjects); },
   async listDatasets() { await wait(); return clone(datasets); },
   async createDataset(input: CreateDatasetDto) { await wait(); const now = new Date().toISOString().slice(0, 10); const created: DatasetDto = { id: `d${Date.now()}`, ...input, project: projects[input.projectId] ?? projects.p1, sizeMb: 0, rowsCount: 0, rowsLabel: "0", latestVersion: "—", createdAt: now, updatedAt: now }; datasets = [created, ...datasets]; return clone(created); },
   async getDataset(id) { await wait(); return clone(findDataset(id)); },

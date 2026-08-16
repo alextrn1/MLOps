@@ -11,6 +11,7 @@ import type {
 } from "@mlops/contracts";
 import { waitForMockDelay } from "@mlops/api-client";
 import { demoProjects } from "@mlops/contracts";
+import type { ModelsApi } from ".";
 
 const projects: ModelProjectDto[] = demoProjects.map((project) => ({ ...project }));
 
@@ -57,7 +58,8 @@ export class MockModelApiError extends Error {
 function findModel(modelId: string) { const model = models.find((item) => item.id === modelId); if (!model) throw new MockModelApiError("model"); return model; }
 function findVersion(modelId: string, versionId: string) { findModel(modelId); const version = (versions[modelId] ?? []).find((item) => item.id === versionId); if (!version) throw new MockModelApiError("version"); return version; }
 
-export const mockModelsApi = {
+export const mockModelsApi: ModelsApi = {
+  async listFormProjects() { return clone(demoProjects); },
   async listModels() { await wait(); return clone(models); },
   async createModel(input: CreateModelDto) { await wait(); const project = projects.find((item) => item.id === input.projectId) ?? projects[0]; const now = new Date().toISOString().slice(0, 10); const model: ModelDto = { id: `m${models.length + 1}`, name: input.name.trim(), description: input.description.trim(), project, taskType: input.taskType, framework: input.framework, versionsCount: 0, createdAt: now, updatedAt: now }; models = [...models, model]; versions[model.id] = []; return clone(model); },
   async getModel(modelId: string) { await wait(); return clone(findModel(modelId)); },

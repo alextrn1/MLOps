@@ -3,6 +3,9 @@ import type { CreateExperimentDto, ExperimentArtifactDto, ExperimentDto, Experim
 import { MockExperimentApiError, mockExperimentsApi } from "./mock";
 
 export interface ExperimentsApi {
+  listFormProjects(): Promise<ReadonlyArray<{ id: string; name: string }>>;
+  listFormModels(): Promise<ReadonlyArray<{ id: string; name: string; projectId: string }>>;
+  listFormDatasets(): Promise<ReadonlyArray<{ id: string; name: string; projectId: string; latestVersion: string }>>;
   listExperiments(): Promise<ExperimentDto[]>;
   createExperiment(input: CreateExperimentDto): Promise<ExperimentDto>;
   getExperiment(experimentId: string): Promise<ExperimentDto>;
@@ -17,6 +20,18 @@ export interface ExperimentsApi {
 const mode = import.meta.env.VITE_API_MODE ?? "mock";
 const http = createApiClient({ baseUrl: import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:4010" });
 const realExperimentsApi: ExperimentsApi = {
+  listFormProjects: () => http.get<Array<{ id: string; name: string }>>("/api/v1/projects"),
+  listFormModels: async () => (await http.get<import("@mlops/contracts").ModelDto[]>("/api/v1/models")).map((model) => ({
+    id: model.id,
+    name: model.name,
+    projectId: model.project.id
+  })),
+  listFormDatasets: async () => (await http.get<import("@mlops/contracts").DatasetDto[]>("/api/v1/datasets")).map((dataset) => ({
+    id: dataset.id,
+    name: dataset.name,
+    projectId: dataset.project.id,
+    latestVersion: dataset.latestVersion
+  })),
   listExperiments: () => http.get("/api/v1/experiments"),
   createExperiment: (input) => http.post("/api/v1/experiments", input),
   getExperiment: (id) => http.get(`/api/v1/experiments/${id}`),

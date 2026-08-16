@@ -3,6 +3,7 @@ import type { CreateModelDto, CreateModelVersionDto, ModelArtifactDto, ModelDto,
 import { MockModelApiError, mockModelsApi } from "./mock";
 
 export interface ModelsApi {
+  listFormProjects(): Promise<ReadonlyArray<{ id: string; name: string }>>;
   listModels(): Promise<ModelDto[]>;
   createModel(input: CreateModelDto): Promise<ModelDto>;
   getModel(modelId: string): Promise<ModelDto>;
@@ -34,6 +35,7 @@ async function withNotFoundResource<T>(resource: "model" | "version", request: (
 }
 
 const realModelsApi: ModelsApi = {
+  listFormProjects: () => http.get("/api/v1/projects"),
   listModels: () => http.get("/api/v1/models"),
   createModel: (input) => http.post("/api/v1/models", input),
   getModel: (modelId) => withNotFoundResource("model", () => http.get(`/api/v1/models/${modelId}`)),

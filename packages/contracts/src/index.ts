@@ -388,7 +388,6 @@ export type IncidentType = "latency_spike" | "data_drift" | "model_degradation" 
 export interface IncidentEntityRefDto { id: string; name: string; }
 export interface IncidentDeploymentRefDto extends IncidentEntityRefDto { url: string; environment: "production" | "staging"; }
 export interface IncidentMetricDto { label: string; value: number; formattedValue: string; threshold: number; formattedThreshold: string; tone: "danger" | "warning"; }
-export interface IncidentExternalIntegrationsDto { grafanaUrl: string | null; logsUrl: string | null; }
 
 export interface IncidentDto {
   id: string;
@@ -401,7 +400,7 @@ export interface IncidentDto {
   deployment: IncidentDeploymentRefDto;
   project: IncidentEntityRefDto;
   metric: IncidentMetricDto;
-  integrations: IncidentExternalIntegrationsDto;
+  observabilityUrl: string | null;
   detectedAt: string;
   resolvedAt: string | null;
   resolvedBy: string | null;

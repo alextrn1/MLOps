@@ -2,6 +2,8 @@ import type { CreateExperimentDto } from "@mlops/contracts";
 import {
   AppIcon,
   Button,
+  DelayedLoadingState,
+  ErrorState,
   invalidateCachedResources,
   Notice,
   SelectField,
@@ -10,11 +12,7 @@ import {
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { experimentsApi } from "../api";
-import {
-  experimentProjectOptions,
-  getExperimentDatasetOptions,
-  getExperimentModelOptions
-} from "../experimentFormOptions";
+import { useExperimentFormOptions } from "../experimentFormOptions";
 
 type FormErrors = Partial<Record<keyof CreateExperimentDto, string>>;
 
@@ -32,8 +30,14 @@ export function NewExperimentPage() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [success, setSuccess] = useState(false);
-  const modelOptions = getExperimentModelOptions(form.projectId);
-  const datasetOptions = getExperimentDatasetOptions(form.projectId);
+  const {
+    projectOptions,
+    modelOptions,
+    datasetOptions,
+    loading: optionsLoading,
+    error: optionsError,
+    retry: retryOptions
+  } = useExperimentFormOptions(form.projectId);
 
   const updateField = (field: keyof CreateExperimentDto, value: string) => {
     setForm((current) => (
@@ -74,6 +78,9 @@ export function NewExperimentPage() {
     }
   };
 
+  if (optionsLoading) return <section className="experiments-page new-experiment-page"><DelayedLoadingState loading label="Загружаем связанные ресурсы…" /></section>;
+  if (optionsError) return <section className="experiments-page new-experiment-page"><ErrorState title="Не удалось загрузить связанные ресурсы" description="Проверьте подключение к API и попробуйте снова." onRetry={retryOptions} /></section>;
+
   return (
     <section className="experiments-page new-experiment-page">
       <header className="new-experiment-heading">
@@ -111,7 +118,7 @@ export function NewExperimentPage() {
             disabled={submitting || success}
           >
             <option value="">Выберите проект</option>
-            {experimentProjectOptions.map((option) => (
+            {projectOptions.map((option) => (
               <option key={option.value} value={option.value}>{option.label}</option>
             ))}
           </SelectField>
